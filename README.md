@@ -38,62 +38,46 @@ processed_your_webinar_name/
 
 ## 🔗 Data Joining Logic & SQL
 
-### Venn Diagram: Data Relationships
+### Data Join Architecture
 
-```
-                          ┌─────────────────────────────┐
-                          │     Webinar Registrants     │
-                          │         (1,434 total)       │
-                          └─────────────────────────────┘
-                                        │
-                                        │
-                    ┌───────────────────┼───────────────────┐
-                    │                   │                   │
-                    │                   │                   │
-          ┌─────────────────┐ ┌─────────────────┐ ┌─────────────────┐
-          │    Attended     │ │                 │ │ Did Not Attend  │
-          │   (251 people)  │ │   CRM Match      │ │ (1,183 people)  │
-          │                 │ │   (99.8%)        │ │                 │
-          └─────────────────┘ └─────────────────┘ └─────────────────┘
-                                    │
-                                    │
-                       ┌────────────┴────────────┐
-                       │    CRM Enrichment      │
-                       │ Company info, sales    │
-                       │ data, customer status  │
-                       └─────────────────────────┘
+```mermaid
+graph TD
+    A[CRM.csv<br/>5,000 records<br/>linkedin_url, company_name,<br/>customer_status, mrr_eur] -->|99.8% match| C[Clay Import File<br/>1,414 records]
+    B[registered list.csv<br/>1,434 records<br/>BMID, first_name,<br/>linkedin_url, email] -->|LEFT JOIN| C
+    D[attend list.csv<br/>251 records<br/>BMID only] -->|attendance_status| C
+    E[did not attend list.csv<br/>1,183 records<br/>BMID only] -->|attendance_status| C
+
+    F[poll responses.csv<br/>166 records<br/>BMID, responses] -->|aggregated| C
+    G[emoji reactions.csv<br/>125 records<br/>BMID, reactions] -->|aggregated| C
+    H[Q&A transcript.csv<br/>35 records<br/>BMID, questions] -->|aggregated| C
+
+    style A fill:#e1f5fe
+    style B fill:#e1f5fe
+    style C fill:#c8e6c9
+    style D fill:#fff3e0
+    style E fill:#fff3e0
+    style F fill:#fce4ec
+    style G fill:#fce4ec
+    style H fill:#fce4ec
 ```
 
-### ASCII Art Venn Diagram
-```
-     ┌─────────────┐
-     │ CRM Data   │
-     │ (5,000)    │
-     └─────┬───────┘
-           │
-     ┌─────┴────────┐
-     │ Registrants  │
-     │ (1,434)      │
-     └─────┬────────┘
-           │
-     ┌─────┴─────┐ ┌─────┴─────┐
-     │ Attended │ │ No Show   │
-     │ (251)    │ │ (1,183)   │
-     └──────────┘ └──────────┘
+### Join Relationships Table
 
-     Legend: Numbers = record counts
-```
+| **Source Table** | **Target Table** | **Join Key** | **Join Type** | **Match Rate** | **Purpose** |
+|------------------|------------------|--------------|---------------|----------------|-------------|
+| `registered list` | `CRM` | `linkedin_url` | **LEFT JOIN** | **99.8%** | Company enrichment |
+| `registered list` | `attend list` | `BMID` | LEFT JOIN | 17.4% | Attendance status |
+| `registered list` | `did not attend` | `BMID` | LEFT JOIN | 82.6% | Attendance status |
+| `registered list` | `poll responses` | `BMID` | LEFT JOIN | 11.6% | Activity aggregation |
+| `registered list` | `emoji reactions` | `BMID` | LEFT JOIN | 8.7% | Activity aggregation |
+| `registered list` | `Q&A transcript` | `BMID` | LEFT JOIN | 2.4% | Activity aggregation |
 
-### Data Flow Venn Representation
+### Data Flow Summary
+
 ```
-   CRM Data (5K)    Webinar Reg (1.4K)    Activity Data
-       │                   │                   │
-       └─────────┬─────────┴─────────┬─────────┘
-                 │                   │
-           ┌─────┴─────┐    ┌────────┴────────┐
-           │ Attended  │    │ Did Not Attend │
-           │ (251)     │    │ (1,183)        │
-           └───────────┘    └─────────────────┘
+Raw Excel Tabs → CSV Conversion → Deduplication → Enrichment → Clay Import
+     ↓               ↓                ↓            ↓          ↓
+  8 Excel sheets → 8 clean CSVs → Remove duplicates → CRM join → 1,414 enriched records
 ```
 
 ### Primary Join: Registration + CRM Enrichment
