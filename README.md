@@ -36,6 +36,102 @@ processed_your_webinar_name/
 - **Attendance status** (registered/attended/did_not_attend)
 - **CRM enrichment** (if CRM tab present)
 
+## 🔗 Data Joining Logic & SQL
+
+### Venn Diagram Overview
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    Webinar Registrants                      │
+│                        (1,434 total)                        │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│            ┌─────────────────┐    ┌─────────────────┐       │
+│            │   Attended      │    │ Did Not Attend  │       │
+│            │   (251 people)  │    │ (1,183 people)  │       │
+│            └─────────────────┘    └─────────────────┘       │
+│                                                             │
+│            ┌─────────────────────────────────────────┐       │
+│            │           CRM Data Match               │       │
+│            │         (100% match rate)              │       │
+│            │   Company info, sales data, status     │       │
+│            └─────────────────────────────────────────┘       │
+│                                                             │
+├─────────────────────────────────────────────────────────────┤
+│   Poll Responses: 166 records (1.26 avg per person)         │
+│   Emoji Reactions: 125 records (varies per person)          │
+│   Q&A Questions: 35 records (aggregated per person)         │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Primary Join: Registration + CRM Enrichment
+
+```sql
+-- Main Clay import query (simplified)
+SELECT
+    r.BMID,
+    r.first_name,
+    r.last_name,
+    r.email,
+    r.linkedin_url,
+    r.registration_datetime,
+    r.attendance_status,
+
+    -- CRM enrichment (LEFT JOIN)
+    c.company_name,
+    c.company_domain,
+    c.industry,
+    c.country,
+    c.customer_status,
+    c.created_at as crm_created_date,
+    c.last_activity_at,
+    c.mrr_eur,
+    c.employees,
+    c.account_tier,
+
+    -- Aggregated activity data
+    COALESCE(p.poll_responses, 0) as poll_count,
+    COALESCE(e.emoji_reactions, 0) as emoji_count,
+    COALESCE(q.qa_questions, '') as questions_asked
+
+FROM registered_list r
+LEFT JOIN crm_data c ON r.linkedin_url = c.linkedin_url
+LEFT JOIN (
+    SELECT BMID, COUNT(*) as poll_responses
+    FROM poll_responses
+    GROUP BY BMID
+) p ON r.BMID = p.BMID
+LEFT JOIN (
+    SELECT BMID, COUNT(*) as emoji_reactions
+    FROM emoji_reactions
+    GROUP BY BMID
+) e ON r.BMID = e.BMID
+LEFT JOIN (
+    SELECT BMID, STRING_AGG(question, '; ') as qa_questions
+    FROM qa_transcript
+    GROUP BY BMID
+) q ON r.BMID = q.BMID
+
+WHERE r.BMID IS NOT NULL
+ORDER BY r.registration_datetime DESC;
+```
+
+### Join Types & Match Rates
+
+| Join Type | Tables | Match Rate | Purpose |
+|-----------|---------|------------|---------|
+| **LEFT JOIN** | `registered` → `CRM` | **100%** | Enrich with company/sales data |
+| **LEFT JOIN** | `registered` → `attend/did_not_attend` | **100%** | Determine attendance status |
+| **LEFT JOIN** | `registered` → `polls` (aggregated) | **11.6%** | Count responses per person |
+| **LEFT JOIN** | `registered` → `emoji` (aggregated) | **8.7%** | Count reactions per person |
+| **LEFT JOIN** | `registered` → `Q&A` (aggregated) | **2.4%** | Collect questions asked |
+
+### Data Flow Architecture
+```
+Excel Tabs → CSV Files → Cleaning → Joins → Clay Import
+     ↓           ↓         ↓        ↓         ↓
+  Raw Data → Deduped → Validated → Enriched → Production Ready
+```
+
 ## Clay Import Instructions
 
 1. **Upload** `webinar_clay_import.csv` to Clay

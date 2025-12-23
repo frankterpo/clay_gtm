@@ -1,36 +1,30 @@
-#,First Name,Last Name,BMID,Time,Question,Question Tag,Upvotes,Answer,Answered By,Source
-1,Kristen,Vaughn-Welch,e767f050ac88,2025/12/23 10:47:06,"What metrics or benchmarks are most useful when assessing AI-generated brand visibility over time? Like what metrics should we be tracking beyond mentions (ex. citations, overall AI sentiment versus competitors, etc.)",,13.0,,,Live Webinar
-2,Helena,Pacheco,e6e77a932b35,2025/12/23 10:14:35,how are you finding the prompts that someone is using for your brand?,,5.0,,,Live Webinar
-3,Ben,Hesseldieck,e67ea0e169ad,2025/12/23 10:24:19,"When using a tool like Peec AI, how do we make sure the prompts that we simulate are closer to reality?",,4.0,,,Live Webinar
-4,Mariana,Sarceda,e119b5b5566f,2025/12/23 10:03:53,"Given that X (Twitter) is a source Grok pulls from, similarly is Instagram going to be an important source for Meta/Llama/Google? Now that IG posts can appear in search?",,4.0,,,Live Webinar
-5,Thomas,Miyamatsu,e0c58cf5048f,2025/12/23 10:53:49,What are some good tools to track visibility and citations in llms?,,4.0,,,Live Webinar
-6,Adam,Šilhan,df4af2d99ac3,2025/12/23 10:27:37,How does recency bias impact the probability of a web search being performed (even if it is an evergreen topic)?,,3.0,,,Live Webinar
-7,Arun Kumar,Ramaswamy,deaca111b325,2025/12/23 10:04:02,Do you influence GEO content by publishing content on your website or offsite?,,3.0,,,Live Webinar
-8,Niall,Quirke,de5c52539a1d,2025/12/23 10:00:47,"Given that over 90% of LLM searches give a different result each time, how do these tools accurately measure AI brand visiblity + citations if each answer is different?",,3.0,,,Live Webinar
-9,Peter,Vorsmann,dd8834cb7e6a,2025/12/23 10:08:21,Does adding detailed Alt text have the same or similar effects to summaries?,,3.0,,,Live Webinar
-10,Naomi,C.,dc5532062fa0,2025/12/23 10:04:46,What is the best way to ensure client websites are crawlable for LLMs to be cited?,,1.0,,,Live Webinar
-11,Elysa,Daumas-Turle,da343aea34b3,2025/12/23 10:29:02,Does a link profile mean anything for GEO?,,1.0,,,Live Webinar
-12,Vartika,Bansal,da3316955230,2025/12/23 10:04:44,Is measuring brand visibility &amp; Citations in LLMs the same as monitoring online or is it more specific?,,1.0,,,Live Webinar
-13,James,New,d86351655ad1,2025/12/23 10:12:40,"Is there a good tool to use to check availability to AI crawlers, aside from checking your log files and robots.txt?",,1.0,,,Live Webinar
-14,Limor,Barenholtz,d6b09ccebef6,2025/12/23 10:59:18,How do you track brand visibility in LLMs? What tools/sources show this data?,,1.0,,,Live Webinar
-15,Sven,Spöde,d68ccc2bc872,2025/12/23 10:08:14,"Being cited is not the end of the story, how do you make sure to have actual clicks? And be in the 40% of cases (on Chat GPT) where there is a click.",,1.0,,,Live Webinar
-16,Renan,Serrano,d5dabfbcd603,2025/12/23 10:51:49,Any tips for developing the right prompt(s) for prompt tracking purposes?,,1.0,,,Live Webinar
-17,Benjamin,Grosse,d4c1e7a93b0f,2025/12/23 10:42:15,Hi - unfortunately I won't be able to stay the full duration - will you be sharing a recording of the webinar? Thanks,,0.0,"Yes, the slides and recording will be sent out after the webinar!",,
-18,Alejandro,Restrepo Imery,d4561fa263de,2025/12/23 10:41:02,What is the difference between chat gpt with one star and gpt with two stars in the zero click stats,,0.0,,,Live Webinar
-19,Karel,Parizek,d41de58d9de7,2025/12/23 10:47:25,Hi  good evening recently I have seen that our offpage SEO keywords showing in AI overview ( still we have not added FAQs schema in our website) here my question is without FAQs schema backlinks is worth with relevant content to rank in Google AI overview?,,0.0,,,Live Webinar
-20,Ulf,K.,cec8c0601274,2025/12/23 10:18:41,Do you think the large discrepancies in citations vs. visibility will improve? Is this a temporary phenomenon that will change as LLMs advance?,,0.0,,,Live Webinar
-21,Arvind,Arivazhagan,ca406dfe4c1d,2025/12/23 10:08:36,Is measuring brand visibility &amp; Citations in LLMs the same as monitoring online or is it more specific?,,0.0,,,Live Webinar
-22,Kanaar,Bell,c716ad20e05a,2025/12/23 10:39:25,"How can we track GEO performance in relation to our KPI metrics? If we can't rely on organic search results for SEO, would visibility percentage and the number of citations be considered measurable indicators?",,0.0,,,Live Webinar
-23,Viktoria,Bykanova,c6a141ada89d,2025/12/23 10:46:41,"Do you use anonymous accounts when testing prompts for monitoring your brand visibility? I suspect that AI always tries to flatter the user/brand owner, so the answer is distorted.",,0.0,,,Live Webinar
-24,John,Estafanous,bfb22532b7af,2025/12/23 10:08:31,"Where is the ""What GPT Prefers over Google"" from?",,0.0,,,Live Webinar
-25,Emma,Ji,bef3c0f3681b,2025/12/23 10:37:23,Could you please elaborate on schema?,,0.0,,,Live Webinar
-26,Amos,Ductan,bcefc475c6e2,2025/12/23 10:34:36,Hmmm...I'm guessing Deutsche Bank...,,0.0,,,Live Webinar
-27,Lucas,F.,bc8dd0e71ad6,2025/12/23 10:43:20,Would it be possible to get your list of sources of llms for that regex filter for Google Analytics?,,0.0,,,Live Webinar
-28,Dan,Lauer,bbaf58ee2c32,2025/12/23 10:30:18,Does implementing Semantic HTML across your site help with LLM citing your pages? We've done it to help the LLMs read all of our text and understand our pages,,0.0,,,Live Webinar
-29,Md Saiful Islam,Joy,b9ef49ecb143,2025/12/23 10:17:11,"""Expect actionable tactics, examples from real GEO workflows and a glimpse into emerging protocols like MCP, A2A, and llms.txt."" <br>This haven't been touched..?",,0.0,,,Live Webinar
-30,Damian,Ghigliotty,b87774ce7321,2025/12/23 10:01:07,What are your thoughts on using llms.txt file?,,0.0,,,Live Webinar
-31,Trevor,Stolber,b7fa0984f858,2025/12/23 10:43:03,"Regarding schema types: Isn’t there a significant difference between how ChatGPT processes content in standard mode vs. web search mode?<br>As far as I understand, ChatGPT in standard mode doesn't access or parse HTML at all, so schema markup wouldn't play a role there.<br>Is that correct?",,0.0,,,Live Webinar
-32,Zarena,Kancheva,b7173c41ae01,2025/12/23 10:32:43,My marketing dept is 1.5 people and our time and resources are limited. What are some simple things we can do if we don't have an entire staff to manage this function?,,0.0,,,Live Webinar
-33,Brian,C.,b6c7ec5ec0de,2025/12/23 10:24:18,IS LLM.TXT IMPORTANT?,,0.0,,,Live Webinar
-34,Nitish,Pahwa,b19851b1f777,2025/12/23 10:47:26,How can we translate AI citations to traffic (especially organic traffic) and conversions?,,0.0,,,Live Webinar
-35,Sherman,Grewal,b0c9a1e3f6d2,2025/12/23 10:50:30,IS THERE A KEYWORD RESEARCH BUT FOR PROMPTS? HOW TO KNOW FOR WHICH PROMPT TO OPTMIZE?,,0.0,,,Live Webinar
+"List: Q&A transcript",,,,,,,,,,
+#,"First Name","Last Name",BMID,Time,Question,"Question Tag",Upvotes,Answer,"Answered By",Source
+1,Kristen,Vaughn-Welch,e767f050ac88,"2025/12/23 10:47:06","What metrics or benchmarks are most useful when assessing AI-generated brand visibility over time? Like what metrics should we be tracking beyond mentions (ex. citations, overall AI sentiment versus competitors, etc.)",,13,,,"Live Webinar"
+2,Helena,Pacheco,e6e77a932b35,"2025/12/23 10:14:35","how are you finding the prompts that someone is using for your brand?",,5,,,"Live Webinar"
+5,Thomas,Miyamatsu,e0c58cf5048f,"2025/12/23 10:53:49","What are some good tools to track visibility and citations in llms?",,4,,,"Live Webinar"
+6,Adam,Šilhan,df4af2d99ac3,"2025/12/23 10:27:37","How does recency bias impact the probability of a web search being performed (even if it is an evergreen topic)?",,3,,,"Live Webinar"
+7,"Arun Kumar",Ramaswamy,deaca111b325,"2025/12/23 10:04:02","Do you influence GEO content by publishing content on your website or offsite?",,3,,,"Live Webinar"
+9,Peter,Vorsmann,dd8834cb7e6a,"2025/12/23 10:08:21","Does adding detailed Alt text have the same or similar effects to summaries?",,3,,,"Live Webinar"
+10,Naomi,C.,dc5532062fa0,"2025/12/23 10:04:46","What is the best way to ensure client websites are crawlable for LLMs to be cited?",,1,,,"Live Webinar"
+11,Elysa,Daumas-Turle,da343aea34b3,"2025/12/23 10:29:02","Does a link profile mean anything for GEO?",,1,,,"Live Webinar"
+12,Vartika,Bansal,da3316955230,"2025/12/23 10:04:44","Is measuring brand visibility &amp; Citations in LLMs the same as monitoring online or is it more specific?",,1,,,"Live Webinar"
+14,Limor,Barenholtz,d6b09ccebef6,"2025/12/23 10:59:18","How do you track brand visibility in LLMs? What tools/sources show this data?",,1,,,"Live Webinar"
+16,Renan,Serrano,d5dabfbcd603,"2025/12/23 10:51:49","Any tips for developing the right prompt(s) for prompt tracking purposes?",,1,,,"Live Webinar"
+17,Benjamin,Grosse,d4c1e7a93b0f,"2025/12/23 10:42:15","Hi - unfortunately I won't be able to stay the full duration - will you be sharing a recording of the webinar? Thanks",,0,"Yes, the slides and recording will be sent out after the webinar!
+18,Alejandro,"Restrepo Imery",d4561fa263de,"2025/12/23 10:41:02","What is the difference between chat gpt with one star and gpt with two stars in the zero click stats",,0,,,"Live Webinar"
+19,Karel,Parizek,d41de58d9de7,"2025/12/23 10:47:25","Hi  good evening recently I have seen that our offpage SEO keywords showing in AI overview ( still we have not added FAQs schema in our website) here my question is without FAQs schema backlinks is worth with relevant content to rank in Google AI overview? ",,0,,,"Live Webinar"
+20,Ulf,K.,cec8c0601274,"2025/12/23 10:18:41","Do you think the large discrepancies in citations vs. visibility will improve? Is this a temporary phenomenon that will change as LLMs advance?",,0,,,"Live Webinar"
+21,Arvind,Arivazhagan,ca406dfe4c1d,"2025/12/23 10:08:36","Is measuring brand visibility &amp; Citations in LLMs the same as monitoring online or is it more specific?",,0,,,"Live Webinar"
+24,John,Estafanous,bfb22532b7af,"2025/12/23 10:08:31","Where is the ""What GPT Prefers over Google"" from?",,0,,,"Live Webinar"
+25,Emma,Ji,bef3c0f3681b,"2025/12/23 10:37:23","Could you please elaborate on schema?",,0,,,"Live Webinar"
+26,Amos,Ductan,bcefc475c6e2,"2025/12/23 10:34:36","Hmmm...I'm guessing Deutsche Bank...",,0,,,"Live Webinar"
+27,Lucas,F.,bc8dd0e71ad6,"2025/12/23 10:43:20","Would it be possible to get your list of sources of llms for that regex filter for Google Analytics?",,0,,,"Live Webinar"
+28,Dan,Lauer,bbaf58ee2c32,"2025/12/23 10:30:18","Does implementing Semantic HTML across your site help with LLM citing your pages? We've done it to help the LLMs read all of our text and understand our pages",,0,,,"Live Webinar"
+29,"Md Saiful Islam",Joy,b9ef49ecb143,"2025/12/23 10:17:11","""Expect actionable tactics, examples from real GEO workflows and a glimpse into emerging protocols like MCP, A2A, and llms.txt."" <br>This haven't been touched..?",,0,,,"Live Webinar"
+30,Damian,Ghigliotty,b87774ce7321,"2025/12/23 10:01:07","What are your thoughts on using llms.txt file?",,0,,,"Live Webinar"
+31,Trevor,Stolber,b7fa0984f858,"2025/12/23 10:43:03","Regarding schema types: Isn’t there a significant difference between how ChatGPT processes content in standard mode vs. web search mode?<br>As far as I understand, ChatGPT in standard mode doesn't access or parse HTML at all, so schema markup wouldn't play a role there.<br>Is that correct?",,0,,,"Live Webinar"
+32,Zarena,Kancheva,b7173c41ae01,"2025/12/23 10:32:43","My marketing dept is 1.5 people and our time and resources are limited. What are some simple things we can do if we don't have an entire staff to manage this function?",,0,,,"Live Webinar"
+33,Brian,C.,b6c7ec5ec0de,"2025/12/23 10:24:18","IS LLM.TXT IMPORTANT?",,0,,,"Live Webinar"
+34,Nitish,Pahwa,b19851b1f777,"2025/12/23 10:47:26","How can we translate AI citations to traffic (especially organic traffic) and conversions?",,0,,,"Live Webinar"
+35,Sherman,Grewal,b0c9a1e3f6d2,"2025/12/23 10:50:30","IS THERE A KEYWORD RESEARCH BUT FOR PROMPTS? HOW TO KNOW FOR WHICH PROMPT TO OPTMIZE?",,0,,,"Live Webinar"

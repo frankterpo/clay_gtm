@@ -94,46 +94,87 @@ def clean_csv_file(csv_path, filename):
     return True
 
 def create_clay_import(output_dir):
-    """Create the comprehensive Clay import file using shell commands"""
+    """Create the comprehensive Clay import file by joining registered list with CRM data"""
 
-    print("\n🔗 Creating Clay import file...")
+    print("\n🔗 Creating Clay import file with CRM enrichment...")
 
     clay_file = os.path.join(output_dir, 'webinar_clay_import.csv')
     registered_file = os.path.join(output_dir, 'registered list.csv')
+    crm_file = os.path.join(output_dir, 'CRM.csv')
 
     if not os.path.exists(registered_file):
         print("❌ Missing registered list.csv")
         return False
 
-    # Create clean Clay import file by removing records with empty BMIDs
-    # BMID is column 8 (1-indexed)
-    cmd = f"awk -F',' 'NR==1 || \$8 != \"\"' '{registered_file}' > '{clay_file}'"
-    success, _ = run_command(cmd, "Create Clay import file (remove empty BMIDs)")
+    if not os.path.exists(crm_file):
+        print("❌ Missing CRM.csv - cannot enrich with CRM data")
+        return False
+
+    # Step 1: Clean registered list (remove empty BMIDs)
+    temp_registered = os.path.join(output_dir, 'temp_registered_clean.csv')
+    cmd = "awk -F',' 'NR==1 || $8 != \"\"' '" + registered_file + "' > '" + temp_registered + "'"
+    success, _ = run_command(cmd, "Clean registered list (remove empty BMIDs)")
     if not success:
         return False
 
-    # Clean incomplete LinkedIn URLs (column 11)
-    temp_file = clay_file + '.tmp'
-    cmd = f"awk -F',' 'BEGIN{{OFS=\",\"}} {{if(NR==1) print \$0; else {{\$11 = (\$11 == \"https://linkedin.com/in/\" || \$11 == \"https://www.linkedin.com/in/\") ? \"\" : \$11; print \$0}}}}' '{clay_file}' > '{temp_file}'"
+    # Step 2: Join with CRM data using LinkedIn URL (column 11 in registered = column 1 in CRM)
+    temp_joined = os.path.join(output_dir, 'temp_joined.csv')
+    awk_join_script = r"""
+BEGIN {FS=","; OFS=","}
+NR==FNR {
+    if(NR>1) crm[$1] = $2","$3","$4","$5","$6","$7","$8","$9","$10","$11","$12","$13","$14","$15","$16","$17
+    next
+}
+{
+    if(NR==1) {
+        print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25
+    } else {
+        linkedin_key = $11
+        if(linkedin_key in crm) {
+            split(crm[linkedin_key], crm_fields, ",")
+            print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,crm_fields[1],crm_fields[2],crm_fields[3],crm_fields[4],crm_fields[5],crm_fields[6],crm_fields[7],crm_fields[8],crm_fields[9],crm_fields[10],crm_fields[11],crm_fields[12],crm_fields[13],crm_fields[14],crm_fields[15]
+        } else {
+            print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,"","","","","","","","","","","","","","","",""
+        }
+    }
+}
+"""
+    cmd = "awk '" + awk_join_script + "' '" + crm_file + "' '" + temp_registered + "' > '" + temp_joined + "'"
+    success, _ = run_command(cmd, "Join registered list with CRM data")
+    if not success:
+        return False
+
+    # Step 3: Clean incomplete LinkedIn URLs (CRM linkedin_url column)
+    temp_clean = os.path.join(output_dir, 'temp_clean.csv')
+    cmd = "awk -F',' 'BEGIN{OFS=\",\"} {if(NR==1) print $0; else {$11 = ($11 == \"https://linkedin.com/in/\" || $11 == \"https://www.linkedin.com/in/\") ? \"\" : $11; $26 = ($26 == \"https://linkedin.com/in/\" || $26 == \"https://www.linkedin.com/in/\") ? \"\" : $26; print $0}}' '" + temp_joined + "' > '" + temp_clean + "'"
     success, _ = run_command(cmd, "Clean incomplete LinkedIn URLs")
     if success:
-        cmd = f"mv '{temp_file}' '{clay_file}'"
-        run_command(cmd, "Replace with cleaned file")
+        cmd = f"mv '{temp_clean}' '{clay_file}'"
+        run_command(cmd, "Create final Clay import file")
     else:
-        # Remove temp file if cleaning failed
+        cmd = f"mv '{temp_joined}' '{clay_file}'"
+        run_command(cmd, "Create final Clay import file (without URL cleaning)")
+
+    # Clean up temp files
+    for temp_file in [temp_registered, temp_joined, temp_clean]:
         if os.path.exists(temp_file):
             os.remove(temp_file)
 
-    # Count records
+    # Count records and CRM matches
+    crm_matches = 0
+    total_records = 0
     with open(clay_file, 'r') as f:
-        record_count = sum(1 for _ in f) - 1  # Subtract header
+        for line_num, line in enumerate(f, 1):
+            if line_num == 1:
+                continue
+            total_records += 1
+            fields = line.strip().split(',')
+            if len(fields) > 25 and fields[25].strip():  # CRM customer_status field
+                crm_matches += 1
 
-    print("  ✅ Created Clay import file")
-    print(f"     Records: {record_count} (cleaned)")
-
-    # Note about aggregations
-    print("  📝 Note: Full aggregation (polls, emoji, Q&A) requires pandas")
-    print("          Basic import file created - run manual aggregation if needed")
+    print("  ✅ Created Clay import file with CRM enrichment")
+    print(f"     Total records: {total_records}")
+    print(f"     CRM matches: {crm_matches} ({crm_matches/total_records*100:.1f}%)")
 
     return True
 
@@ -144,16 +185,8 @@ def process_excel_file(excel_path):
         print(f"❌ Excel file not found: {excel_path}")
         return False
 
-    # Create output directory
-    excel_name = Path(excel_path).stem.replace(' ', '_')
-    output_dir = f"processed_{excel_name}"
-
-    # Clean up any existing directory
-    if os.path.exists(output_dir):
-        import shutil
-        shutil.rmtree(output_dir)
-
-    os.makedirs(output_dir)
+    # Use raw_data as output directory
+    output_dir = "raw_data"
 
     print(f"🚀 Processing webinar data from: {excel_path}")
     print(f"📁 Output directory: {output_dir}")
