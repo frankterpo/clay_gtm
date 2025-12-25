@@ -40,16 +40,11 @@ processed_your_webinar_name/
 
 ### Data Join Architecture
 
-#### ER Diagram (Entity Relationship)
+#### ER Diagram (Current Implementation)
 ```mermaid
 erDiagram
     CRM ||--o{ CLAY_IMPORT : "99.8% match"
     REGISTERED_LIST ||--|| CLAY_IMPORT : "primary table"
-    ATTEND_LIST }o--|| CLAY_IMPORT : "attendance status"
-    DID_NOT_ATTEND_LIST }o--|| CLAY_IMPORT : "attendance status"
-    POLL_RESPONSES }o--|| CLAY_IMPORT : "aggregated"
-    EMOJI_REACTIONS }o--|| CLAY_IMPORT : "aggregated"
-    QA_TRANSCRIPT }o--|| CLAY_IMPORT : "aggregated"
 
     CRM {
         string linkedin_url PK
@@ -80,66 +75,48 @@ erDiagram
         string linkedin_url
         string company_name
         string customer_status
-        string attendance_status
-        string poll_responses
-        string emoji_reactions
-        string qa_questions
-    }
-
-    ATTEND_LIST {
-        string BMID PK,FK
-    }
-
-    DID_NOT_ATTEND_LIST {
-        string BMID PK,FK
-    }
-
-    POLL_RESPONSES {
-        string BMID PK,FK
-        string question
-        string choice
-    }
-
-    EMOJI_REACTIONS {
-        string BMID PK,FK
-        string emoji_type
-        number count
-    }
-
-    QA_TRANSCRIPT {
-        string BMID PK,FK
-        string question
-        string answer
-        number upvotes
+        string mrr_eur
+        string employees
+        string account_tier
     }
 ```
+
+**Note:** Activity tables (polls, emoji, Q&A) are extracted but **not currently joined** in the automated script. Only CRM enrichment is implemented.
 
 #### Flow Diagram (Data Pipeline)
 ```mermaid
 flowchart TD
-    A[Excel File<br/>8 tabs] --> B[process_webinar_data.py<br/>CSV Extraction + Cleaning<br/>Deduplication]
-    B --> C[CRM Enrichment<br/>99.8% match rate<br/>LEFT JOIN on linkedin_url]
-    C --> D[Activity Aggregation<br/>Polls, Emoji, Q&A<br/>Multiple responses per person]
-    D --> E[Clay Import File<br/>1,414 enriched records<br/>1 row per person]
+    A[Excel File<br/>8 tabs] --> B[process_webinar_data.py<br/>Extracts ALL 7 CSVs<br/>Cleaning + Deduplication]
+    B --> C[CRM Enrichment Only<br/>99.8% match rate<br/>LEFT JOIN registered_list ↔ CRM<br/>on linkedin_url]
 
-    F[registered_list.csv<br/>1,434 records<br/>Base table] --> B
-    G[CRM.csv<br/>5,000 records<br/>Company data] --> C
-    H[Activity CSVs<br/>326 records<br/>Polls + Reactions + Q&A] --> D
+    C --> D[Clay Import File<br/>1,414 enriched records<br/>CRM data added to each person]
+
+    E[All CSVs from Excel:<br/>• registered_list.csv (1,434 records)<br/>• CRM.csv (5,000 records)<br/>• attend/did_not_attend lists<br/>• poll responses, emoji, Q&A<br/>• All extracted in step B]
 
     style A fill:#e8f5e8
-    style E fill:#c8e6c9
+    style D fill:#c8e6c9
+
+    B -.-> E
 ```
 
-### Join Relationships Table
+**Note:** Activity aggregation (polls, emoji, Q&A) is currently **not implemented** in the automated script. The current version only does CRM enrichment. Manual aggregation can be added for advanced use cases.
+
+### Join Relationships (Currently Implemented)
 
 | **Source Table** | **Target Table** | **Join Key** | **Join Type** | **Match Rate** | **Purpose** |
 |------------------|------------------|--------------|---------------|----------------|-------------|
 | `registered list` | `CRM` | `linkedin_url` | **LEFT JOIN** | **99.8%** | Company enrichment |
-| `registered list` | `attend list` | `BMID` | LEFT JOIN | 17.4% | Attendance status |
-| `registered list` | `did not attend` | `BMID` | LEFT JOIN | 82.6% | Attendance status |
-| `registered list` | `poll responses` | `BMID` | LEFT JOIN | 11.6% | Activity aggregation |
-| `registered list` | `emoji reactions` | `BMID` | LEFT JOIN | 8.7% | Activity aggregation |
-| `registered list` | `Q&A transcript` | `BMID` | LEFT JOIN | 2.4% | Activity aggregation |
+
+### Activity Tables (Available but Not Joined)
+The following tables are extracted from Excel but **not currently joined** in the automated script:
+
+- `attend list` (251 records) - could join on BMID for attendance status
+- `did not attend list` (1,183 records) - could join on BMID for attendance status
+- `poll responses` (166 records) - multiple responses per BMID
+- `emoji reactions` (125 records) - multiple reactions per BMID
+- `Q&A transcript` (35 records) - multiple questions per BMID
+
+**Future Enhancement:** Activity aggregation could be added for richer Clay automations.
 
 ### Data Flow Summary
 
