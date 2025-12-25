@@ -38,9 +38,9 @@ processed_your_webinar_name/
 
 ```mermaid
 flowchart TD
-    A[Excel File<br/>8 tabs] --> B[process_webinar_data.py<br/>Extracts 7 CSVs<br/>Clean + Dedupe]
-    B --> C[CRM Enrichment<br/>LEFT JOIN on linkedin_url<br/>99.8% match rate]
-    C --> D[webinar_clay_import.csv<br/>1,414 enriched records]
+    A[Excel File<br/>8 tabs] --> B[process_webinar_data.py<br/>Extracts 7 CSVs:<br/>• registered_list<br/>• CRM<br/>• attend_list<br/>• did_not_attend<br/>• poll_responses<br/>• emoji_reactions<br/>• Q&A_transcript<br/>Clean + Dedupe]
+    B --> C[CRM Enrichment Only<br/>registered_list ←→ CRM<br/>LEFT JOIN on linkedin_url<br/>99.8% match rate]
+    C --> D[webinar_clay_import.csv<br/>1,414 enriched records<br/>1 row per person]
 ```
 
 ### How Files Are Processed
