@@ -37,6 +37,13 @@ INBOUND
 ** Superhuman / Granola
 ** Inbound classification
 
-* Cycles
-** Retry
-** Reopen
+CYCLES
+* New Lead
+* Existing Lead
+** Returning
+** Churned Returning
+
+BACKBONE
+* Pipedream
+* n8n
+* Zapier
