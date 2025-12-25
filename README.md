@@ -87,28 +87,28 @@ SELECT
     c.employees,
     c.account_tier,
 
-    -- Attendance status (LEFT JOIN on BMID)
+    -- Attendance status (would be joined on BMID)
     CASE
         WHEN a.BMID IS NOT NULL THEN 'attended'
         WHEN dna.BMID IS NOT NULL THEN 'did_not_attend'
         ELSE 'registered_only'
     END as attendance_status,
 
-    -- Aggregated activity data (LEFT JOINS on BMID)
+    -- Activity aggregation (would be joined on BMID)
     COALESCE(p.response_count, 0) as poll_responses,
     COALESCE(e.emoji_count, 0) as emoji_reactions,
     COALESCE(q.question_count, 0) as questions_asked
 
 FROM registered_list r
 
--- CRM enrichment (currently implemented)
+-- CRM enrichment (currently implemented - records are joined)
 LEFT JOIN crm_data c ON r.linkedin_url = c.linkedin_url
 
--- Attendance status (not currently joined)
+-- Attendance status (extracted but not joined - CSVs exist separately)
 LEFT JOIN attend_list a ON r.BMID = a.BMID
 LEFT JOIN did_not_attend_list dna ON r.BMID = dna.BMID
 
--- Activity aggregation (not currently joined)
+-- Activity aggregation (extracted but not joined - CSVs exist separately)
 LEFT JOIN (
     SELECT BMID, COUNT(*) as response_count
     FROM poll_responses
@@ -135,19 +135,24 @@ ORDER BY r.registration_datetime DESC;
 
 | Join Type | Tables | Match Rate | Status | Purpose |
 |-----------|---------|------------|---------|---------|
-| **LEFT JOIN** | `registered_list` → `CRM` | **99.8%** | ✅ **Implemented** | Company/sales data enrichment |
-| **LEFT JOIN** | `registered_list` → `attend_list` | **17.4%** | ❌ Not joined | Attendance status |
-| **LEFT JOIN** | `registered_list` → `did_not_attend_list` | **82.6%** | ❌ Not joined | Attendance status |
-| **LEFT JOIN** | `registered_list` → `poll_responses` | **11.6%** | ❌ Not joined | Activity aggregation |
-| **LEFT JOIN** | `registered_list` → `emoji_reactions` | **8.7%** | ❌ Not joined | Activity aggregation |
-| **LEFT JOIN** | `registered_list` → `Q&A_transcript` | **2.4%** | ❌ Not joined | Activity aggregation |
+| **LEFT JOIN** | `registered_list` → `CRM` | **99.8%** | ✅ **Joined** | Company data merged into each registrant record |
+| **LEFT JOIN** | `registered_list` → `attend_list` | **17.4%** | ❌ Extracted | Would add attendance_status to registrant records |
+| **LEFT JOIN** | `registered_list` → `did_not_attend_list` | **82.6%** | ❌ Extracted | Would add attendance_status to registrant records |
+| **LEFT JOIN** | `registered_list` → `poll_responses` | **11.6%** | ❌ Extracted | Would aggregate poll counts per registrant |
+| **LEFT JOIN** | `registered_list` → `emoji_reactions` | **8.7%** | ❌ Extracted | Would aggregate emoji counts per registrant |
+| **LEFT JOIN** | `registered_list` → `Q&A_transcript` | **2.4%** | ❌ Extracted | Would aggregate question counts per registrant |
 
 ### File Relationships Summary
 
 - **`registered_list.csv`** (1,414 records): **Base table** with all registrant info
-- **`CRM.csv`** (5,000 records): **Enriched** via LEFT JOIN on `linkedin_url` (99.8% match)
-- **Activity CSVs**: **Extracted but not joined** - contain engagement data (polls, emoji, Q&A)
-- **Attendance CSVs**: **Extracted but not joined** - determine who attended vs. registered
+- **`CRM.csv`** (5,000 records): **Joined** via LEFT JOIN on `linkedin_url` (99.8% match)
+- **Activity CSVs**: **Extracted but not joined** - would enrich with engagement data (polls, emoji, Q&A)
+- **Attendance CSVs**: **Extracted but not joined** - would enrich with attendance status
+
+### Key Distinction: Joined vs. Extracted
+
+- **"Joined"** (CRM): Tables are **combined via SQL JOIN operations** - CRM data is merged into each registrant record
+- **"Extracted"** (Activity CSVs): Tables are **extracted from Excel but not combined** - they exist separately and could be used for enrichment but currently aren't
 
 ### Data Flow Architecture
 ```
