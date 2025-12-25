@@ -60,10 +60,14 @@ Raw Excel Tabs → CSV Conversion → Deduplication → Enrichment → Clay Impo
   8 Excel sheets → 8 clean CSVs → Remove duplicates → CRM join → 1,414 enriched records
 ```
 
-### Primary Join: Registration + CRM Enrichment
+### How All Files Are Joined
+
+**Current Implementation:** Only CRM enrichment is implemented. Activity CSVs are extracted but not joined.
+
+#### Complete Join Logic (All Files)
 
 ```sql
--- Main Clay import query (currently implemented)
+-- Full Clay import with all data sources joined
 SELECT
     r.BMID,
     r.first_name,
@@ -73,7 +77,7 @@ SELECT
     r.industry,
     r.country,
 
-    -- CRM enrichment (always present)
+    -- CRM enrichment (LEFT JOIN on linkedin_url)
     c.company_name,
     c.company_domain,
     c.customer_status,
@@ -81,10 +85,47 @@ SELECT
     c.last_activity_at,
     c.mrr_eur,
     c.employees,
-    c.account_tier
+    c.account_tier,
+
+    -- Attendance status (LEFT JOIN on BMID)
+    CASE
+        WHEN a.BMID IS NOT NULL THEN 'attended'
+        WHEN dna.BMID IS NOT NULL THEN 'did_not_attend'
+        ELSE 'registered_only'
+    END as attendance_status,
+
+    -- Aggregated activity data (LEFT JOINS on BMID)
+    COALESCE(p.response_count, 0) as poll_responses,
+    COALESCE(e.emoji_count, 0) as emoji_reactions,
+    COALESCE(q.question_count, 0) as questions_asked
 
 FROM registered_list r
+
+-- CRM enrichment (currently implemented)
 LEFT JOIN crm_data c ON r.linkedin_url = c.linkedin_url
+
+-- Attendance status (not currently joined)
+LEFT JOIN attend_list a ON r.BMID = a.BMID
+LEFT JOIN did_not_attend_list dna ON r.BMID = dna.BMID
+
+-- Activity aggregation (not currently joined)
+LEFT JOIN (
+    SELECT BMID, COUNT(*) as response_count
+    FROM poll_responses
+    GROUP BY BMID
+) p ON r.BMID = p.BMID
+
+LEFT JOIN (
+    SELECT BMID, COUNT(*) as emoji_count
+    FROM emoji_reactions
+    GROUP BY BMID
+) e ON r.BMID = e.BMID
+
+LEFT JOIN (
+    SELECT BMID, COUNT(*) as question_count
+    FROM qa_transcript
+    GROUP BY BMID
+) q ON r.BMID = q.BMID
 
 WHERE r.BMID IS NOT NULL
 ORDER BY r.registration_datetime DESC;
@@ -92,9 +133,21 @@ ORDER BY r.registration_datetime DESC;
 
 ### Join Types & Match Rates
 
-| Join Type | Tables | Match Rate | Purpose |
-|-----------|---------|------------|---------|
-| **LEFT JOIN** | `registered` → `CRM` | **99.8%** | Company/sales data enrichment (always present) |
+| Join Type | Tables | Match Rate | Status | Purpose |
+|-----------|---------|------------|---------|---------|
+| **LEFT JOIN** | `registered_list` → `CRM` | **99.8%** | ✅ **Implemented** | Company/sales data enrichment |
+| **LEFT JOIN** | `registered_list` → `attend_list` | **17.4%** | ❌ Not joined | Attendance status |
+| **LEFT JOIN** | `registered_list` → `did_not_attend_list` | **82.6%** | ❌ Not joined | Attendance status |
+| **LEFT JOIN** | `registered_list` → `poll_responses` | **11.6%** | ❌ Not joined | Activity aggregation |
+| **LEFT JOIN** | `registered_list` → `emoji_reactions` | **8.7%** | ❌ Not joined | Activity aggregation |
+| **LEFT JOIN** | `registered_list` → `Q&A_transcript` | **2.4%** | ❌ Not joined | Activity aggregation |
+
+### File Relationships Summary
+
+- **`registered_list.csv`** (1,414 records): **Base table** with all registrant info
+- **`CRM.csv`** (5,000 records): **Enriched** via LEFT JOIN on `linkedin_url` (99.8% match)
+- **Activity CSVs**: **Extracted but not joined** - contain engagement data (polls, emoji, Q&A)
+- **Attendance CSVs**: **Extracted but not joined** - determine who attended vs. registered
 
 ### Data Flow Architecture
 ```
