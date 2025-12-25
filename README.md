@@ -38,85 +38,19 @@ processed_your_webinar_name/
 
 ## 🔗 Data Joining Logic & SQL
 
-### Data Join Architecture
+### Data Pipeline
 
-#### ER Diagram (Current Implementation)
-```mermaid
-erDiagram
-    CRM ||--o{ CLAY_IMPORT : "99.8% match"
-    REGISTERED_LIST ||--|| CLAY_IMPORT : "primary table"
-
-    CRM {
-        string linkedin_url PK
-        string first_name
-        string last_name
-        string company_name
-        string company_domain
-        string customer_status
-        number mrr_eur
-        number employees
-        string account_tier
-    }
-
-    REGISTERED_LIST {
-        string BMID PK
-        string first_name
-        string last_name
-        string linkedin_url FK
-        string email
-        string industry
-        string country
-    }
-
-    CLAY_IMPORT {
-        string BMID PK
-        string first_name
-        string last_name
-        string linkedin_url
-        string company_name
-        string customer_status
-        string mrr_eur
-        string employees
-        string account_tier
-    }
-```
-
-**Note:** Activity tables (polls, emoji, Q&A) are extracted but **not currently joined** in the automated script. Only CRM enrichment is implemented.
-
-#### Flow Diagram (Data Pipeline)
 ```mermaid
 flowchart TD
-    A[Excel File<br/>8 tabs] --> B[process_webinar_data.py<br/>Extracts ALL 7 CSVs<br/>Cleaning + Deduplication]
-    B --> C[CRM Enrichment Only<br/>99.8% match rate<br/>LEFT JOIN registered_list ↔ CRM<br/>on linkedin_url]
-
-    C --> D[Clay Import File<br/>1,414 enriched records<br/>CRM data added to each person]
-
-    E[All CSVs from Excel:<br/>• registered_list.csv (1,434 records)<br/>• CRM.csv (5,000 records)<br/>• attend/did_not_attend lists<br/>• poll responses, emoji, Q&A<br/>• All extracted in step B]
-
-    style A fill:#e8f5e8
-    style D fill:#c8e6c9
-
-    B -.-> E
+    A[Excel File<br/>8 tabs] --> B[process_webinar_data.py<br/>Extracts 7 CSVs<br/>Clean + Dedupe]
+    B --> C[CRM Enrichment<br/>LEFT JOIN on linkedin_url<br/>99.8% match rate]
+    C --> D[webinar_clay_import.csv<br/>1,414 records<br/>1 row per person]
 ```
 
-**Note:** Activity aggregation (polls, emoji, Q&A) is currently **not implemented** in the automated script. The current version only does CRM enrichment. Manual aggregation can be added for advanced use cases.
+### Current Joins
 
-### Join Relationships (Currently Implemented)
-
-| **Source Table** | **Target Table** | **Join Key** | **Join Type** | **Match Rate** | **Purpose** |
-|------------------|------------------|--------------|---------------|----------------|-------------|
-| `registered list` | `CRM` | `linkedin_url` | **LEFT JOIN** | **99.8%** | Company enrichment |
-
-### Activity Tables (Available but Not Joined)
-The following tables are extracted from Excel but **not currently joined** in the automated script:
-
-- `attend list` (251 records) - could join on BMID for attendance status
-- `did not attend list` (1,183 records) - could join on BMID for attendance status
-- `poll responses` (166 records) - multiple responses per BMID
-- `emoji reactions` (125 records) - multiple reactions per BMID
-- `Q&A transcript` (35 records) - multiple questions per BMID
-
-**Future Enhancement:** Activity aggregation could be added for richer Clay automations.
+- `registered_list.csv` ←→ `CRM.csv` (linkedin_url)
+- Activity CSVs extracted but not joined
 
 ### Data Flow Summary
 
