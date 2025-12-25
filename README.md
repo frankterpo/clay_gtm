@@ -117,19 +117,17 @@ erDiagram
 #### Flow Diagram (Data Pipeline)
 ```mermaid
 flowchart TD
-    A[Excel File<br/>8 tabs] --> B[process_webinar_data.py]
-    B --> C[CSV Extraction<br/>+ Cleaning]
-    C --> D[Deduplication<br/>Remove duplicates]
-    D --> E[CRM Enrichment<br/>99.8% match rate]
-    E --> F[Activity Aggregation<br/>Polls, Emoji, Q&A]
-    F --> G[Clay Import File<br/>1,414 enriched records]
+    A[Excel File<br/>8 tabs] --> B[process_webinar_data.py<br/>CSV Extraction + Cleaning<br/>Deduplication]
+    B --> C[CRM Enrichment<br/>99.8% match rate<br/>LEFT JOIN on linkedin_url]
+    C --> D[Activity Aggregation<br/>Polls, Emoji, Q&A<br/>Multiple responses per person]
+    D --> E[Clay Import File<br/>1,414 enriched records<br/>1 row per person]
 
-    H[registered_list.csv<br/>1,434 records] --> C
-    I[CRM.csv<br/>5,000 records] --> E
-    J[Activity CSVs<br/>326 records] --> F
+    F[registered_list.csv<br/>1,434 records<br/>Base table] --> B
+    G[CRM.csv<br/>5,000 records<br/>Company data] --> C
+    H[Activity CSVs<br/>326 records<br/>Polls + Reactions + Q&A] --> D
 
     style A fill:#e8f5e8
-    style G fill:#c8e6c9
+    style E fill:#c8e6c9
 ```
 
 ### Join Relationships Table
