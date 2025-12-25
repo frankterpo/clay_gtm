@@ -40,25 +40,96 @@ processed_your_webinar_name/
 
 ### Data Join Architecture
 
+#### ER Diagram (Entity Relationship)
 ```mermaid
-graph TD
-    A[CRM.csv<br/>5,000 records<br/>linkedin_url, company_name,<br/>customer_status, mrr_eur] -->|99.8% match| C[Clay Import File<br/>1,414 records]
-    B[registered list.csv<br/>1,434 records<br/>BMID, first_name,<br/>linkedin_url, email] -->|LEFT JOIN| C
-    D[attend list.csv<br/>251 records<br/>BMID only] -->|attendance_status| C
-    E[did not attend list.csv<br/>1,183 records<br/>BMID only] -->|attendance_status| C
+erDiagram
+    CRM ||--o{ CLAY_IMPORT : "99.8% match"
+    REGISTERED_LIST ||--|| CLAY_IMPORT : "primary table"
+    ATTEND_LIST }o--|| CLAY_IMPORT : "attendance status"
+    DID_NOT_ATTEND_LIST }o--|| CLAY_IMPORT : "attendance status"
+    POLL_RESPONSES }o--|| CLAY_IMPORT : "aggregated"
+    EMOJI_REACTIONS }o--|| CLAY_IMPORT : "aggregated"
+    QA_TRANSCRIPT }o--|| CLAY_IMPORT : "aggregated"
 
-    F[poll responses.csv<br/>166 records<br/>BMID, responses] -->|aggregated| C
-    G[emoji reactions.csv<br/>125 records<br/>BMID, reactions] -->|aggregated| C
-    H[Q&A transcript.csv<br/>35 records<br/>BMID, questions] -->|aggregated| C
+    CRM {
+        string linkedin_url PK
+        string first_name
+        string last_name
+        string company_name
+        string company_domain
+        string customer_status
+        number mrr_eur
+        number employees
+        string account_tier
+    }
 
-    style A fill:#e1f5fe
-    style B fill:#e1f5fe
-    style C fill:#c8e6c9
-    style D fill:#fff3e0
-    style E fill:#fff3e0
-    style F fill:#fce4ec
-    style G fill:#fce4ec
-    style H fill:#fce4ec
+    REGISTERED_LIST {
+        string BMID PK
+        string first_name
+        string last_name
+        string linkedin_url FK
+        string email
+        string industry
+        string country
+    }
+
+    CLAY_IMPORT {
+        string BMID PK
+        string first_name
+        string last_name
+        string linkedin_url
+        string company_name
+        string customer_status
+        string attendance_status
+        string poll_responses
+        string emoji_reactions
+        string qa_questions
+    }
+
+    ATTEND_LIST {
+        string BMID PK,FK
+    }
+
+    DID_NOT_ATTEND_LIST {
+        string BMID PK,FK
+    }
+
+    POLL_RESPONSES {
+        string BMID PK,FK
+        string question
+        string choice
+    }
+
+    EMOJI_REACTIONS {
+        string BMID PK,FK
+        string emoji_type
+        number count
+    }
+
+    QA_TRANSCRIPT {
+        string BMID PK,FK
+        string question
+        string answer
+        number upvotes
+    }
+```
+
+#### Flow Diagram (Data Pipeline)
+```mermaid
+flowchart TD
+    A[Excel File<br/>8 tabs] --> B[process_webinar_data.py]
+    B --> C[CSV Extraction<br/>+ Cleaning]
+    C --> D[Deduplication<br/>Remove duplicates]
+    D --> E[CRM Enrichment<br/>99.8% match rate]
+    E --> F[Activity Aggregation<br/>Polls, Emoji, Q&A]
+    F --> G[Clay Import File<br/>1,414 enriched records]
+
+    H[registered_list.csv<br/>1,434 records] --> C
+    I[CRM.csv<br/>5,000 records] --> E
+    J[Activity CSVs<br/>326 records] --> F
+
+    style A fill:#e8f5e8
+    style G fill:#c8e6c9
 ```
 
 ### Join Relationships Table
