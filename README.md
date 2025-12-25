@@ -33,132 +33,26 @@ processed_your_webinar_name/
 - **BMID** as primary key for all records
 - **LinkedIn URLs** for social data enrichment (100% coverage)
 - **Company data** for firmographic enrichment
-- **Attendance status** (registered/attended/did_not_attend)
 - **CRM enrichment** (required - 99.8% match rate)
 
-## 🔗 Data Joining Logic & SQL
-
-### Data Pipeline
+## 🔄 Data Processing Flow
 
 ```mermaid
 flowchart TD
     A[Excel File<br/>8 tabs] --> B[process_webinar_data.py<br/>Extracts 7 CSVs<br/>Clean + Dedupe]
     B --> C[CRM Enrichment<br/>LEFT JOIN on linkedin_url<br/>99.8% match rate]
-    C --> D[webinar_clay_import.csv<br/>1,414 records<br/>1 row per person]
+    C --> D[webinar_clay_import.csv<br/>1,414 records<br/>Ready for Clay]
 ```
 
-### Current Joins
+### Current Implementation
+- **CRM Joined**: Company data merged into each registrant record (99.8% match)
+- **Activity CSVs**: Extracted but not joined (available for future enrichment)
 
-- `registered_list.csv` ←→ `CRM.csv` (linkedin_url)
-- Activity CSVs extracted but not joined
-
-### Data Flow Summary
-
+### Data Flow
 ```
-Raw Excel Tabs → CSV Conversion → Deduplication → Enrichment → Clay Import
-     ↓               ↓                ↓            ↓          ↓
-  8 Excel sheets → 8 clean CSVs → Remove duplicates → CRM join → 1,414 enriched records
-```
-
-### How All Files Are Joined
-
-**Current Implementation:** Only CRM enrichment is implemented. Activity CSVs are extracted but not joined.
-
-#### Complete Join Logic (All Files)
-
-```sql
--- Full Clay import with all data sources joined
-SELECT
-    r.BMID,
-    r.first_name,
-    r.last_name,
-    r.email,
-    r.linkedin_url,
-    r.industry,
-    r.country,
-
-    -- CRM enrichment (LEFT JOIN on linkedin_url)
-    c.company_name,
-    c.company_domain,
-    c.customer_status,
-    c.created_at as crm_created_date,
-    c.last_activity_at,
-    c.mrr_eur,
-    c.employees,
-    c.account_tier,
-
-    -- Attendance status (would be joined on BMID)
-    CASE
-        WHEN a.BMID IS NOT NULL THEN 'attended'
-        WHEN dna.BMID IS NOT NULL THEN 'did_not_attend'
-        ELSE 'registered_only'
-    END as attendance_status,
-
-    -- Activity aggregation (would be joined on BMID)
-    COALESCE(p.response_count, 0) as poll_responses,
-    COALESCE(e.emoji_count, 0) as emoji_reactions,
-    COALESCE(q.question_count, 0) as questions_asked
-
-FROM registered_list r
-
--- CRM enrichment (currently implemented - records are joined)
-LEFT JOIN crm_data c ON r.linkedin_url = c.linkedin_url
-
--- Attendance status (extracted but not joined - CSVs exist separately)
-LEFT JOIN attend_list a ON r.BMID = a.BMID
-LEFT JOIN did_not_attend_list dna ON r.BMID = dna.BMID
-
--- Activity aggregation (extracted but not joined - CSVs exist separately)
-LEFT JOIN (
-    SELECT BMID, COUNT(*) as response_count
-    FROM poll_responses
-    GROUP BY BMID
-) p ON r.BMID = p.BMID
-
-LEFT JOIN (
-    SELECT BMID, COUNT(*) as emoji_count
-    FROM emoji_reactions
-    GROUP BY BMID
-) e ON r.BMID = e.BMID
-
-LEFT JOIN (
-    SELECT BMID, COUNT(*) as question_count
-    FROM qa_transcript
-    GROUP BY BMID
-) q ON r.BMID = q.BMID
-
-WHERE r.BMID IS NOT NULL
-ORDER BY r.registration_datetime DESC;
-```
-
-### Join Types & Match Rates
-
-| Join Type | Tables | Match Rate | Status | Purpose |
-|-----------|---------|------------|---------|---------|
-| **LEFT JOIN** | `registered_list` → `CRM` | **99.8%** | ✅ **Joined** | Company data merged into each registrant record |
-| **LEFT JOIN** | `registered_list` → `attend_list` | **17.4%** | ❌ Extracted | Would add attendance_status to registrant records |
-| **LEFT JOIN** | `registered_list` → `did_not_attend_list` | **82.6%** | ❌ Extracted | Would add attendance_status to registrant records |
-| **LEFT JOIN** | `registered_list` → `poll_responses` | **11.6%** | ❌ Extracted | Would aggregate poll counts per registrant |
-| **LEFT JOIN** | `registered_list` → `emoji_reactions` | **8.7%** | ❌ Extracted | Would aggregate emoji counts per registrant |
-| **LEFT JOIN** | `registered_list` → `Q&A_transcript` | **2.4%** | ❌ Extracted | Would aggregate question counts per registrant |
-
-### File Relationships Summary
-
-- **`registered_list.csv`** (1,414 records): **Base table** with all registrant info
-- **`CRM.csv`** (5,000 records): **Joined** via LEFT JOIN on `linkedin_url` (99.8% match)
-- **Activity CSVs**: **Extracted but not joined** - would enrich with engagement data (polls, emoji, Q&A)
-- **Attendance CSVs**: **Extracted but not joined** - would enrich with attendance status
-
-### Key Distinction: Joined vs. Extracted
-
-- **"Joined"** (CRM): Tables are **combined via SQL JOIN operations** - CRM data is merged into each registrant record
-- **"Extracted"** (Activity CSVs): Tables are **extracted from Excel but not combined** - they exist separately and could be used for enrichment but currently aren't
-
-### Data Flow Architecture
-```
-Excel Tabs → CSV Files → Cleaning → Joins → Clay Import
-     ↓           ↓         ↓        ↓         ↓
-  Raw Data → Deduped → Validated → Enriched → Production Ready
+Excel → 7 Clean CSVs → CRM Join → Clay Import
+   ↓          ↓             ↓          ↓
+Raw Data → Deduped → Enriched → Production Ready
 ```
 
 ## Clay Import Instructions
@@ -168,7 +62,7 @@ Excel Tabs → CSV Files → Cleaning → Joins → Clay Import
 3. **Configure automations**:
    - LinkedIn enrichment for social data
    - Company domain enrichment for firmographics
-   - Lead scoring based on attendance + engagement
+   - Lead scoring based on company data + registration info
 
 ## Requirements
 
