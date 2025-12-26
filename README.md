@@ -12,8 +12,6 @@ python3 process_webinar_data.py "path/to/webinar.xlsx"
 
 **Output**: `processed_TIMESTAMP/webinar_clay_import.csv` (914 enriched records, 40 columns)
 
-## Architecture
-
 ## Data Flow
 
 ```mermaid
