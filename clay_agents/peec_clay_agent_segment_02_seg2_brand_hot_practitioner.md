@@ -39,9 +39,27 @@ Heyreach Action: <either "ADD_TO_HEYREACH_CAMPAIGN: <campaign_name>" or "N/A">
 ## Segmentation Logic
 
 ### Business Logic (Identification)
-- **Brand classification**: {{Industry}} contains marketing, advertising, or survey responses indicate brand/marketing focus
+- **Smart brand/agency classification** (see Brand vs Agency Classification Logic below)
 - **Hot engagement**: Same thresholds as SEG1 ({{Q&A}}>=1 OR {{Chats}}>=2 OR {{Polls}}>=1 OR {{Engaged}}>=60)
 - **Practitioner titles**: {{Title}} does NOT contain: CMO, VP, Head, Director, Founder, CEO, Chief (but still brand-focused roles like Manager, Specialist, Coordinator)
+
+### Brand vs Agency Classification Logic
+**Clay Agent Analysis**: Use multiple data signals to determine brand vs agency status:
+
+**Brand Indicators:**
+- **Company domain analysis**: Non-agency domains (.com, .co.uk, etc. vs .agency, .digital)
+- **Company size**: {{crm_employees}} > 50 suggests established brand
+- **LinkedIn company analysis**: Via HeyReach MCP - check for "brand" vs "agency" in company description
+- **Survey responses**: Focus on "our brand", "our campaigns", "our products"
+- **Clay enrichment**: {{crm_industry}} more specific than broad industry field
+
+**Agency Indicators:**
+- **Company domain analysis**: Contains "agency", "digital", "creative", "marketing" in domain
+- **Business model signals**: Survey mentions "clients", "multiple brands", "agency services"
+- **Company description**: Via HeyReach MCP - check for "agency", "consulting", "client work"
+- **Service focus**: Emphasis on deliverables and reporting rather than direct brand ownership
+
+**Fallback**: If unclear, analyze {{Website Domain}} and {{Company Linkedin URL}} via HeyReach MCP to determine business model.
 
 ### Why This Segment Matters for GTM Motion
 Brand practitioners execute day-to-day marketing operations. They're closer to the tactical challenges of AI search optimization and need practical, implementable solutions. Converting practitioners creates internal champions who influence decision-maker purchasing while driving product adoption at the operational level.

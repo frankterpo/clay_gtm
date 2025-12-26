@@ -41,7 +41,26 @@ Heyreach Action: <either "ADD_TO_HEYREACH_CAMPAIGN: <campaign_name>" or "N/A">
 ### Business Logic (Identification)
 - **High satisfaction**: {{Rating}} >= 4 (on 1-5 scale)
 - **Positive sentiment**: {{Comment}} contains clearly positive language OR enthusiastic feedback
-- **Applies to both**: Brand AND agency classifications (satisfaction transcends business type)
+- **Universal application**: Applies to both brand AND agency classifications (satisfaction transcends business type)
+- **Smart brand/agency classification** for messaging tailoring (see below)
+
+### Brand vs Agency Classification Logic
+**Clay Agent Analysis**: Essential for customizing promoter messaging:
+
+**Brand Indicators:**
+- **Company domain analysis**: Non-agency domains (.com, .co.uk, etc. vs .agency, .digital)
+- **Company size**: {{crm_employees}} > 50 suggests established brand
+- **LinkedIn company analysis**: Via HeyReach MCP - check for "brand" vs "agency" in company description
+- **Survey responses**: Focus on "our brand", "our campaigns", "our products"
+- **Clay enrichment**: {{crm_industry}} more specific than broad industry field
+
+**Agency Indicators:**
+- **Company domain analysis**: Contains "agency", "digital", "creative", "marketing" in domain
+- **Business model signals**: Survey mentions "clients", "multiple brands", "agency services"
+- **Company description**: Via HeyReach MCP - check for "agency", "consulting", "client work"
+- **Service focus**: Emphasis on deliverables and reporting rather than direct brand ownership
+
+**Impact on Messaging**: Brand promoters get case study offers; agency promoters get client testimonial and partnership opportunities.
 
 ### Why This Segment Matters for GTM Motion
 Promoters are your strongest advocates and most likely to convert. They provide social proof, case studies, and referrals. Converting promoters creates reference customers who accelerate sales cycles for similar prospects through testimonials and word-of-mouth.

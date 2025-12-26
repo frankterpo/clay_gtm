@@ -40,7 +40,26 @@ Heyreach Action: <either "ADD_TO_HEYREACH_CAMPAIGN: <campaign_name>" or "N/A">
 
 ### Business Logic (Identification)
 - **No-show criteria**: {{Duration}} = 0/blank AND {{Engaged}} = 0/blank (or {{Recording Duration}} blank)
-- **Applies to both**: Brand OR agency classifications (no engagement = no show regardless of type)
+- **Universal application**: Applies to both brand AND agency classifications (no engagement = no show regardless of type)
+- **Smart brand/agency classification** for messaging tailoring (see below)
+
+### Brand vs Agency Classification Logic
+**Clay Agent Analysis**: Critical for tailoring messaging to business model:
+
+**Brand Indicators:**
+- **Company domain analysis**: Non-agency domains (.com, .co.uk, etc. vs .agency, .digital)
+- **Company size**: {{crm_employees}} > 50 suggests established brand
+- **LinkedIn company analysis**: Via HeyReach MCP - check for "brand" vs "agency" in company description
+- **Survey responses**: Focus on "our brand", "our campaigns", "our products"
+- **Clay enrichment**: {{crm_industry}} more specific than broad industry field
+
+**Agency Indicators:**
+- **Company domain analysis**: Contains "agency", "digital", "creative", "marketing" in domain
+- **Business model signals**: Survey mentions "clients", "multiple brands", "agency services"
+- **Company description**: Via HeyReach MCP - check for "agency", "consulting", "client work"
+- **Service focus**: Emphasis on deliverables and reporting rather than direct brand ownership
+
+**Impact on Messaging**: Brand messaging focuses on direct ROI; agency messaging emphasizes client deliverables and reporting value.
 
 ### Why This Segment Matters for GTM Motion
 No-shows represent registered interest that didn't convert to attendance. Re-engagement campaigns can recover 15-25% of these leads. Lower-friction re-entry points (recording access, quick snapshots) maintain relationship while gathering feedback on barriers to attendance.

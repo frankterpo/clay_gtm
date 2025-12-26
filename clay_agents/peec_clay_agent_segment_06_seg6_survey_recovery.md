@@ -41,7 +41,26 @@ Heyreach Action: <either "ADD_TO_HEYREACH_CAMPAIGN: <campaign_name>" or "N/A">
 ### Business Logic (Identification)
 - **Low satisfaction**: {{Rating}} <= 3 (on 1-5 scale)
 - **Negative sentiment**: {{Comment}} signals confusion, missing value, or dissatisfaction
-- **Applies to both**: Brand AND agency classifications (dissatisfaction needs addressing regardless of type)
+- **Universal application**: Applies to both brand AND agency classifications (dissatisfaction needs addressing regardless of type)
+- **Smart brand/agency classification** for tailored recovery messaging (see below)
+
+### Brand vs Agency Classification Logic
+**Clay Agent Analysis**: Critical for understanding dissatisfaction context:
+
+**Brand Indicators:**
+- **Company domain analysis**: Non-agency domains (.com, .co.uk, etc. vs .agency, .digital)
+- **Company size**: {{crm_employees}} > 50 suggests established brand
+- **LinkedIn company analysis**: Via HeyReach MCP - check for "brand" vs "agency" in company description
+- **Survey responses**: Focus on "our brand", "our campaigns", "our products"
+- **Clay enrichment**: {{crm_industry}} more specific than broad industry field
+
+**Agency Indicators:**
+- **Company domain analysis**: Contains "agency", "digital", "creative", "marketing" in domain
+- **Business model signals**: Survey mentions "clients", "multiple brands", "agency services"
+- **Company description**: Via HeyReach MCP - check for "agency", "consulting", "client work"
+- **Service focus**: Emphasis on deliverables and reporting rather than direct brand ownership
+
+**Impact on Messaging**: Brand recovery focuses on direct value gaps; agency recovery addresses client deliverable concerns.
 
 ### Why This Segment Matters for GTM Motion
 Detractors can damage reputation and influence others negatively. Recovery campaigns can convert 20-40% of detractors into promoters. Understanding their concerns improves product and messaging. Failed recovery attempts provide crucial feedback for product development.

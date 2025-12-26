@@ -39,8 +39,26 @@ Heyreach Action: <either "ADD_TO_HEYREACH_CAMPAIGN: <campaign_name>" or "N/A">
 ## Segmentation Logic
 
 ### Business Logic (Identification)
-- **Agency classification**: {{Industry}} contains agency, consulting, or survey responses indicate client-service business model
+- **Smart brand/agency classification** (see Brand vs Agency Classification Logic below)
 - **Hot engagement**: Same thresholds as other HOT segments ({{Q&A}}>=1 OR {{Chats}}>=2 OR {{Polls}}>=1 OR {{Engaged}}>=60)
+
+### Brand vs Agency Classification Logic
+**Clay Agent Analysis**: Use multiple data signals to determine brand vs agency status:
+
+**Brand Indicators:**
+- **Company domain analysis**: Non-agency domains (.com, .co.uk, etc. vs .agency, .digital)
+- **Company size**: {{crm_employees}} > 50 suggests established brand
+- **LinkedIn company analysis**: Via HeyReach MCP - check for "brand" vs "agency" in company description
+- **Survey responses**: Focus on "our brand", "our campaigns", "our products"
+- **Clay enrichment**: {{crm_industry}} more specific than broad industry field
+
+**Agency Indicators:**
+- **Company domain analysis**: Contains "agency", "digital", "creative", "marketing" in domain
+- **Business model signals**: Survey mentions "clients", "multiple brands", "agency services"
+- **Company description**: Via HeyReach MCP - check for "agency", "consulting", "client work"
+- **Service focus**: Emphasis on deliverables and reporting rather than direct brand ownership
+
+**Fallback**: If unclear, analyze {{Website Domain}} and {{Company Linkedin URL}} via HeyReach MCP to determine business model.
 
 ### Why This Segment Matters for GTM Motion
 Agencies represent high-volume potential customers who can become channel partners. Each agency client represents multiple brand opportunities. Agencies need packaged, reportable deliverables that prove ROI to their clients, creating scalable GTM motion through agency partnerships.
