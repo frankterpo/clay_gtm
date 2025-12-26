@@ -158,16 +158,16 @@ def create_clay_import(output_dir):
                     else:
                         cleaned_row[key] = value
 
-                # Additional cleaning: remove records with empty names or malformed LinkedIn URLs
+                # Additional cleaning: validate required fields and clean LinkedIn URLs
                 firstname = cleaned_row.get('Firstname', '').strip()
                 lastname = cleaned_row.get('Lastname', '').strip()
                 linkedin_url = cleaned_row.get('LinkedIn Profile URL', '').strip()
 
-                # Skip records with empty names
+                # Skip records with empty names (required for Clay import)
                 if not firstname or not lastname:
                     continue
 
-                # Clean malformed LinkedIn URLs (just domain without profile) - keep records for Clay enrichment
+                # Clean malformed LinkedIn URLs (set to empty string, keep row for other enrichment)
                 if linkedin_url in ['https://linkedin.com/in/', 'https://www.linkedin.com/in/', 'https://linkedin.com/', 'https://www.linkedin.com/']:
                     cleaned_row['LinkedIn Profile URL'] = ''
 
