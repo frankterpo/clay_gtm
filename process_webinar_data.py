@@ -465,7 +465,7 @@ def process_excel_file(excel_path):
     # Create timestamped processing directory
     from datetime import datetime
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    processing_dir = f"raw_data/processed_{timestamp}"
+    processing_dir = f"processed_{timestamp}"
 
     # Ensure raw_data directory exists
     os.makedirs("raw_data", exist_ok=True)

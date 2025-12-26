@@ -38,7 +38,7 @@ processed_your_webinar_name/
 
 ```mermaid
 flowchart TD
-    A[Excel File<br/>8 tabs] --> B[process_webinar_data.py<br/>Creates: raw_data/processed_TIMESTAMP/<br/>Extracts 7 CSVs + temp files<br/>Clean + Dedupe]
+    A[Excel File<br/>8 tabs] --> B[process_webinar_data.py<br/>Creates: processed_TIMESTAMP/<br/>Extracts 7 CSVs + temp files<br/>Clean + Dedupe]
     B --> C[Comprehensive Joins<br/>CRM + Attendance + Activity<br/>Multiple data sources]
     C --> D[webinar_clay_import.csv<br/>Copied to: raw_data/<br/>1,403 fully enriched records]
 ```
@@ -46,20 +46,22 @@ flowchart TD
 ## 📁 Directory Structure
 
 ```
-raw_data/
-├── GTM ENG – Challenge version.xlsx          # Input Excel file
-├── webinar_clay_import.csv                   # Final output (ready for Clay)
-└── processed_YYYYMMDD_HHMMSS/               # Timestamped processing folders
-    ├── registered list.csv                   # Cleaned registrant data
-    ├── CRM.csv                              # CRM enrichment data
-    ├── attend list.csv                      # Attendance data
-    ├── did not attend list.csv              # Non-attendance data
-    ├── poll responses.csv                   # Poll interaction data
-    ├── emoji eeaction.csv                   # Emoji reaction data
-    ├── Q&A transcript.csv                   # Q&A interaction data
-    ├── temp_*.csv                           # Intermediate processing files
-    ├── webinar_clay_import.csv              # Processing result (copied to raw_data/)
-    └── data_relationships.md                # Processing documentation
+clay_gtm/
+├── raw_data/
+│   ├── GTM ENG – Challenge version.xlsx      # Input Excel file
+│   └── webinar_clay_import.csv               # Final output (ready for Clay)
+├── processed_YYYYMMDD_HHMMSS/                # Timestamped processing folders
+│   ├── registered list.csv                   # Cleaned registrant data
+│   ├── CRM.csv                              # CRM enrichment data
+│   ├── attend list.csv                      # Attendance data
+│   ├── did not attend list.csv              # Non-attendance data
+│   ├── poll responses.csv                   # Poll interaction data
+│   ├── emoji eeaction.csv                   # Emoji reaction data
+│   ├── Q&A transcript.csv                   # Q&A interaction data
+│   ├── temp_*.csv                           # Intermediate processing files
+│   ├── webinar_clay_import.csv              # Processing result (copied to raw_data/)
+│   └── data_relationships.md                # Processing documentation
+└── [other project files]
 ```
 
 ### How Files Are Processed
