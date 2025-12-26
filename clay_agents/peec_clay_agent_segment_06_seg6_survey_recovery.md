@@ -36,7 +36,38 @@ Heyreach Action: <either "ADD_TO_HEYREACH_CAMPAIGN: <campaign_name>" or "N/A">
 
 
 
-## Use when
+## Segmentation Logic
+
+### Business Logic (Identification)
+- **Low satisfaction**: {{Rating}} <= 3 (on 1-5 scale)
+- **Negative sentiment**: {{Comment}} signals confusion, missing value, or dissatisfaction
+- **Applies to both**: Brand AND agency classifications (dissatisfaction needs addressing regardless of type)
+
+### Why This Segment Matters for GTM Motion
+Detractors can damage reputation and influence others negatively. Recovery campaigns can convert 20-40% of detractors into promoters. Understanding their concerns improves product and messaging. Failed recovery attempts provide crucial feedback for product development.
+
+### Additional Enrichments
+- **Pain point analysis**: Specific concerns from feedback (would analyze via NLP)
+- **Competitor comparison**: What they expected vs. what they received
+- **Product gap identification**: Missing features or unclear value propositions
+
+## Messaging & Campaign Plan
+
+### Message Angle
+Acknowledge the gap and offer a concrete fix you can demonstrate quickly—without being defensive. Service recovery focused on understanding and addressing their specific concerns.
+
+### Primary CTA
+"Reply with what you expected to learn (one line)." (Gather feedback before proposing solutions)
+
+### Example LinkedIn Message
+**Connection Note**: Hi {{Firstname}}, I noticed your feedback on our AI visibility webinar and want to make sure we address any gaps. What specifically were you hoping to learn that we didn't cover well? I'd like to help.
+
+### Campaign Timing & Touchpoints
+- **Immediate**: Response within 24 hours of survey submission
+- **Careful cadence**: 2 touchpoints over 7 days (initial response → follow-up based on their feedback)
+- **Rationale**: Detractors need active listening and personalized solutions, not aggressive selling
+
+## Use When (Technical Criteria)
 
 - {{Rating}} <= 3 OR {{Comment}} signals confusion / missing value.
 

@@ -174,25 +174,70 @@ erDiagram
 - ✅ Clear data relationships ("joined" vs "extracted")
 - ✅ Actionable Clay setup guidance
 
-## Clay Magic: AI-Powered Segmentation
+## GTM Segmentation Strategy
 
-**6 Clay agent prompts** for HeyReach MCP-powered personalized webinar follow-ups:
+### Segmentation Logic (Challenge Criteria 2.1-2.3)
 
-- **SEG1**: Brand Hot Decision Makers (executive outreach)
-- **SEG2**: Brand Hot Practitioners (tactical messaging)
-- **SEG3**: Agency Hot (partnership focus)
-- **SEG4**: No Show (re-engagement)
-- **SEG5**: Survey Promoters (advocacy building)
-- **SEG6**: Survey Recovery (win-back campaigns)
+**6 intelligent segments** based on engagement patterns, titles, and feedback:
 
-**Implementation:**
-- HeyReach MCP integration with compliance gates
-- 20+ data points per message (engagement + company + role)
-- Multi-channel CTAs (email + LinkedIn sequences)
-- Anti-noise web search safeguards
-- Direct campaign integration
+#### Brand vs. Agency Classification
+- **Brand segments (1-2)**: Marketing-focused companies seeking direct AI visibility solutions
+- **Agency segment (3)**: Client-service businesses needing packaged deliverables and reporting
+- **Universal segments (4-6)**: Attendance and satisfaction-based (apply to both brand/agency)
 
-**Outcome:** AI-crafted executive messaging based on actual engagement data.
+#### Segment Definitions & Business Logic
+
+| Segment | Business Logic | GTM Importance | Additional Enrichments |
+|---------|----------------|----------------|----------------------|
+| **SEG1: Brand • Hot • DM** | Brand + high engagement + C-level titles | Sales-qualified enterprise leads with immediate revenue potential | Firmographics, account tiers, MRR validation |
+| **SEG2: Brand • Hot • Practitioner** | Brand + high engagement + non-C-level titles | Operational champions who drive adoption and influence purchasing | Role depth, tech stack, team structure |
+| **SEG3: Agency • Hot** | Agency + high engagement | Channel partners for scalable GTM through client work | Client portfolio, service offerings, agency size |
+| **SEG4: No Show** | Zero attendance/engagement | Recovery potential (15-25% re-engagement rate) | Registration timing, email engagement history |
+| **SEG5: Survey Promoter** | Rating ≥4 or positive feedback | Advocacy and referral drivers, fastest conversion path | Testimonial potential, referral networks |
+| **SEG6: Survey Recovery** | Rating ≤3 or negative feedback | Reputation protection, product feedback source | Pain point analysis, competitor comparisons |
+
+### Messaging & Campaign Plan (Challenge Criteria 4.1-4.4)
+
+#### Message Angles & CTAs by Segment
+
+| Segment | Message Angle | Primary CTA | Example Message Type |
+|---------|---------------|-------------|---------------------|
+| **SEG1** | AI visibility → pipeline growth mapping | "15-min setup call to map prompts + competitors" | Email (executive urgency) |
+| **SEG2** | Tactical wins: prompts + citations | "Reply with 1 competitor" OR "15-min setup call" | LinkedIn (relationship building) |
+| **SEG3** | Agency edge: packaged deliverables | "Agency reporting workflow walkthrough" | Email (business case focus) |
+| **SEG4** | Lower-friction re-entry + value offer | "Want mini AI visibility snapshot?" | LinkedIn (gentle re-engagement) |
+| **SEG5** | Convert enthusiasm to action | "Book 15-min onboarding" | Email (immediate conversion) |
+| **SEG6** | Service recovery + understanding | "Reply with what you expected to learn" | LinkedIn (listening-first approach) |
+
+#### Campaign Timing & Touchpoint Strategy
+
+**Hot Segments (1-3)**: Immediate engagement, 3-4 touchpoints over 7-14 days
+- High-intent prospects need quick, personalized follow-up
+- Mix email + LinkedIn for multi-channel coverage
+- Focus on business value and ROI demonstration
+
+**Recovery Segments (4-6)**: Delayed/sensitive timing, 2-3 touchpoints over 7-14 days
+- Respect timing constraints and emotional state
+- Build trust through listening and value-first approach
+- Use feedback to personalize subsequent touches
+
+### Technical Implementation
+
+**6 Clay agent prompts** with HeyReach MCP integration:
+
+- **SEG1**: `peec_clay_agent_segment_01_seg1_brand_hot_dm.md`
+- **SEG2**: `peec_clay_agent_segment_02_seg2_brand_hot_practitioner.md`
+- **SEG3**: `peec_clay_agent_segment_03_seg3_agency_hot.md`
+- **SEG4**: `peec_clay_agent_segment_04_seg4_no_show.md`
+- **SEG5**: `peec_clay_agent_segment_05_seg5_survey_promoter.md`
+- **SEG6**: `peec_clay_agent_segment_06_seg6_survey_recovery.md`
+
+**HeyReach Integration:**
+- Compliance gates (unsubscribed, consent status)
+- Web search safeguards (60s max, approved sources only)
+- 20+ data points per message (engagement + CRM + social)
+- Multi-channel routing (email vs LinkedIn based on consent)
+- Anti-noise rules preventing generic messaging
 
 ## Clay Setup
 

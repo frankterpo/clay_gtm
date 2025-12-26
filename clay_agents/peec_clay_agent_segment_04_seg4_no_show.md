@@ -36,7 +36,37 @@ Heyreach Action: <either "ADD_TO_HEYREACH_CAMPAIGN: <campaign_name>" or "N/A">
 
 
 
-## Use when
+## Segmentation Logic
+
+### Business Logic (Identification)
+- **No-show criteria**: {{Duration}} = 0/blank AND {{Engaged}} = 0/blank (or {{Recording Duration}} blank)
+- **Applies to both**: Brand OR agency classifications (no engagement = no show regardless of type)
+
+### Why This Segment Matters for GTM Motion
+No-shows represent registered interest that didn't convert to attendance. Re-engagement campaigns can recover 15-25% of these leads. Lower-friction re-entry points (recording access, quick snapshots) maintain relationship while gathering feedback on barriers to attendance.
+
+### Additional Enrichments
+- **Registration timing**: When they registered vs. webinar timing
+- **Email engagement**: Open rates, click-through on previous communications
+- **Competitor signals**: Alternative solutions they might be evaluating
+
+## Messaging & Campaign Plan
+
+### Message Angle
+Lower-friction re-entry: 2-minute recap + what to do next to measure AI discovery. Respectful approach that acknowledges they couldn't attend but keeps the door open.
+
+### Primary CTA
+"Want us to run a mini AI visibility snapshot for {{Org}}?" (yes/no question). If yes, next step is booking a call.
+
+### Example LinkedIn Message
+**Connection Note**: Hi {{Firstname}}, noticed you registered for our AI search visibility webinar but weren't able to attend. I'd be happy to share a 2-minute recap and the recording. We're also offering complimentary mini visibility snapshots - interested in one for {{Org}}?
+
+### Campaign Timing & Touchpoints
+- **Delayed**: First touch 3-5 days post-webinar (respect they may have been busy)
+- **Gentle cadence**: 2 touchpoints over 14 days (LinkedIn → email)
+- **Rationale**: No-shows need time to process, respond better to low-pressure value offers than aggressive sales
+
+## Use When (Technical Criteria)
 
 - {{Duration}} = 0/blank AND {{Engaged}} = 0/blank (or {{Recording Duration}} blank).
 

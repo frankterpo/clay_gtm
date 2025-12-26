@@ -36,7 +36,48 @@ Heyreach Action: <either "ADD_TO_HEYREACH_CAMPAIGN: <campaign_name>" or "N/A">
 
 
 
-## Use when
+## Segmentation Logic
+
+### Business Logic (Identification)
+- **Brand classification**: {{Industry}} contains marketing, advertising, or survey responses indicate brand/marketing focus
+- **Hot engagement**: ({{Q&A}}>=1 OR {{Chats}}>=2 OR {{Polls}}>=1 OR {{Engaged}}>=60)
+- **Decision maker titles**: {{Title}} contains: CMO, VP, Head, Director, Founder, CEO, Chief
+
+### Why This Segment Matters for GTM Motion
+High-intent brand decision makers already showing deep webinar engagement. These are sales-qualified leads with demonstrated interest in AI search/visibility solutions. Converting these to customers drives immediate revenue while establishing enterprise reference cases.
+
+### Additional Enrichments
+- **Firmographics**: Company size ({{crm_employees}}), account tier ({{crm_account_tier}}), MRR ({{crm_mrr_eur}})
+- **Role validation**: LinkedIn profile verification via HeyReach MCP
+- **Tech stack**: Current AI/search tools usage (would enrich via Clay)
+
+## Messaging & Campaign Plan
+
+### Message Angle
+Show them how AI visibility maps to pipeline growth and competitive share-of-voice. They already engage deeply, so position Peec as the strategic advantage they've been seeking.
+
+### Primary CTA
+"15-min setup call to map prompts + competitors" (https://peec.ai/bookdemo?utm_source=webinar&utm_medium=seg1_brand_hot_dm&utm_campaign=webinar_{{BMID}}&utm_content={{Country (lowercase)}})
+
+### Example Email
+**Subject**: AI Visibility Gap Analysis for {{Org}}
+
+**Body**: Hi {{Firstname}},
+
+Your engagement during our AI search visibility webinar shows you're already thinking strategically about this space. The data shows companies like {{Org}} are missing 60-80% of AI-driven search opportunities.
+
+Would you be open to a 15-minute call where we map your current prompts + key competitors? We can show you exactly where you're losing share-of-voice to competitors.
+
+Best,
+[Your Name]
+
+### Campaign Timing & Touchpoints
+- **Immediate**: Email within 24 hours of webinar
+- **Follow-up**: LinkedIn connection request + personalized note within 48 hours
+- **Cadence**: 3 touchpoints over 7 days (email → LinkedIn → email)
+- **Rationale**: High-intent decision makers need quick, executive-level engagement before attention shifts
+
+## Use When (Technical Criteria)
 
 - Brand + ({{Q&A}}>=1 OR {{Chats}}>=2 OR {{Polls}}>=1 OR {{Engaged}}>=60) + {{Title}} contains any of: CMO, VP, Head, Director, Founder, CEO.
 

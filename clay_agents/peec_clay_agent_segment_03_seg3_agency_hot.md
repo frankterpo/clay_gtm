@@ -36,7 +36,47 @@ Heyreach Action: <either "ADD_TO_HEYREACH_CAMPAIGN: <campaign_name>" or "N/A">
 
 
 
-## Use when
+## Segmentation Logic
+
+### Business Logic (Identification)
+- **Agency classification**: {{Industry}} contains agency, consulting, or survey responses indicate client-service business model
+- **Hot engagement**: Same thresholds as other HOT segments ({{Q&A}}>=1 OR {{Chats}}>=2 OR {{Polls}}>=1 OR {{Engaged}}>=60)
+
+### Why This Segment Matters for GTM Motion
+Agencies represent high-volume potential customers who can become channel partners. Each agency client represents multiple brand opportunities. Agencies need packaged, reportable deliverables that prove ROI to their clients, creating scalable GTM motion through agency partnerships.
+
+### Additional Enrichments
+- **Client portfolio**: Agency's key clients and industries (would enrich via Clay + web research)
+- **Service offerings**: Specific AI/marketing services offered
+- **Agency size**: Number of clients, typical project size
+
+## Messaging & Campaign Plan
+
+### Message Angle
+Position Peec as the agency's edge: packaged deliverables (exports/dashboards) that prove impact in AI discovery. Make it feel like a productized service agencies can sell to clients.
+
+### Primary CTA
+"Quick walkthrough of an agency reporting workflow" (https://peec.ai/bookdemo?utm_source=webinar&utm_medium=seg3_agency_hot&utm_campaign=webinar_{{BMID}}&utm_content={{Country (lowercase)}})
+
+### Example Email
+**Subject**: AI Visibility Reporting for Agency Clients
+
+**Body**: Hi {{Firstname}},
+
+Your agency team's engagement in our AI search webinar suggests you're thinking about client deliverables. We offer packaged AI visibility reports that agencies can deliver to clients - complete with competitor analysis, citation tracking, and ROI projections.
+
+Would you be interested in a quick walkthrough of how agencies like yours are using this for client reporting?
+
+Best,
+[Your Name]
+
+### Campaign Timing & Touchpoints
+- **Immediate**: Email within 48 hours of webinar
+- **Follow-up**: LinkedIn connection with value-add content
+- **Cadence**: 3 touchpoints over 14 days (email → LinkedIn → demo invite)
+- **Rationale**: Agencies need more relationship-building time but respond well to business case demonstrations
+
+## Use When (Technical Criteria)
 
 - Agency + HOT.
 

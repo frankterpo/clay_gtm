@@ -36,7 +36,41 @@ Heyreach Action: <either "ADD_TO_HEYREACH_CAMPAIGN: <campaign_name>" or "N/A">
 
 
 
-## Use when
+## Segmentation Logic
+
+### Business Logic (Identification)
+- **Brand classification**: {{Industry}} contains marketing, advertising, or survey responses indicate brand/marketing focus
+- **Hot engagement**: Same thresholds as SEG1 ({{Q&A}}>=1 OR {{Chats}}>=2 OR {{Polls}}>=1 OR {{Engaged}}>=60)
+- **Practitioner titles**: {{Title}} does NOT contain: CMO, VP, Head, Director, Founder, CEO, Chief (but still brand-focused roles like Manager, Specialist, Coordinator)
+
+### Why This Segment Matters for GTM Motion
+Brand practitioners execute day-to-day marketing operations. They're closer to the tactical challenges of AI search optimization and need practical, implementable solutions. Converting practitioners creates internal champions who influence decision-maker purchasing while driving product adoption at the operational level.
+
+### Additional Enrichments
+- **Role depth**: Specific marketing function (SEO, content, SEM) via LinkedIn enrichment
+- **Tech stack**: Current tools and workflows (would enrich via Clay)
+- **Team structure**: Understanding reporting relationships and influence pathways
+
+## Messaging & Campaign Plan
+
+### Message Angle
+Anchor to their engagement and promise fast, concrete wins: prompts that matter + citations driving visibility. Position as the tactical advantage they've been seeking for measurable results.
+
+### Primary CTA
+Choose ONE:
+- "Reply with 1 competitor and we'll suggest 10 prompts + top citations"
+- "15-min setup call to map prompts + competitors" (https://peec.ai/bookdemo?utm_source=webinar&utm_medium=seg2_brand_hot_practitioner&utm_campaign=webinar_{{BMID}}&utm_content={{Country (lowercase)}})
+
+### Example LinkedIn Message
+**Connection Note**: Hi {{Firstname}}, saw your engagement in our AI search webinar - the tactical insights on prompt optimization really resonated. Would love to connect and share some specific prompt frameworks for {{Org}}'s competitors.
+
+### Campaign Timing & Touchpoints
+- **Immediate**: LinkedIn connection request within 24 hours
+- **Follow-up**: Personalized LinkedIn message within 48 hours
+- **Cadence**: 4 touchpoints over 10 days (LinkedIn → email → LinkedIn → email)
+- **Rationale**: Practitioners need relationship-building and educational content before sales conversations
+
+## Use When (Technical Criteria)
 
 - Brand + HOT (same engagement thresholds as Segment 1) but {{Title}} is NOT a decision-maker title.
 

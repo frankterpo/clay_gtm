@@ -36,7 +36,47 @@ Heyreach Action: <either "ADD_TO_HEYREACH_CAMPAIGN: <campaign_name>" or "N/A">
 
 
 
-## Use when
+## Segmentation Logic
+
+### Business Logic (Identification)
+- **High satisfaction**: {{Rating}} >= 4 (on 1-5 scale)
+- **Positive sentiment**: {{Comment}} contains clearly positive language OR enthusiastic feedback
+- **Applies to both**: Brand AND agency classifications (satisfaction transcends business type)
+
+### Why This Segment Matters for GTM Motion
+Promoters are your strongest advocates and most likely to convert. They provide social proof, case studies, and referrals. Converting promoters creates reference customers who accelerate sales cycles for similar prospects through testimonials and word-of-mouth.
+
+### Additional Enrichments
+- **Testimonial potential**: Detailed feedback analysis for case studies
+- **Referral network**: Connections who might benefit from similar solutions
+- **Success metrics**: Specific outcomes they achieved (would survey post-conversion)
+
+## Messaging & Campaign Plan
+
+### Message Angle
+Thank them, then propose the fastest path to value: first project setup (prompts, competitors, models). Convert enthusiasm into action while they're still highly motivated.
+
+### Primary CTA
+"Book a 15-min onboarding / prompt-mapping" (https://peec.ai/bookdemo?utm_source=webinar&utm_medium=seg5_survey_promoter&utm_campaign=webinar_{{BMID}}&utm_content={{Country (lowercase)}})
+
+### Example Email
+**Subject**: Thanks for the Great Feedback on AI Visibility
+
+**Body**: Hi {{Firstname}},
+
+Thank you for the {{Rating}}-star rating and your positive feedback about our AI search visibility webinar. It's great to hear that the insights on prompt optimization resonated with you.
+
+We're offering complimentary onboarding sessions to get companies like {{Org}} set up with their first AI visibility project. Would you be interested in a 15-minute call to map out prompts and competitors?
+
+Best,
+[Your Name]
+
+### Campaign Timing & Touchpoints
+- **Immediate**: Email within 24 hours of survey submission
+- **Urgent cadence**: 2 touchpoints over 3 days (email → follow-up email)
+- **Rationale**: High enthusiasm decays quickly; capitalize on peak satisfaction for conversion
+
+## Use When (Technical Criteria)
 
 - {{Rating}} >= 4 OR {{Comment}} is clearly positive.
 
