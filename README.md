@@ -130,7 +130,7 @@ erDiagram
     registered_list ||--o{ qa_transcript : "aggregated"
 
     registered_list {
-        string # "Record ID"
+        string record_id "Record ID"
         string Firstname "Participant first name"
         string Lastname "Participant last name"
         string "Website Domain" "Company website"
@@ -178,7 +178,7 @@ erDiagram
     }
 
     attend_list {
-        string # "Record ID"
+        string record_id "Record ID"
         string Firstname "Attendee first name"
         string Lastname "Attendee last name"
         string "Website Domain" "Attendee website"
@@ -206,7 +206,7 @@ erDiagram
     }
 
     did_not_attend_list {
-        string # "Record ID"
+        string record_id "Record ID"
         string Firstname "DNA first name"
         string Lastname "DNA last name"
         string "Website Domain" "DNA website"
@@ -234,7 +234,7 @@ erDiagram
     }
 
     poll_responses {
-        string # "Record ID"
+        string record_id "Record ID"
         string "Question #" "Poll question number"
         string Question "Poll question text"
         string "First Name" "Respondent first name"
@@ -246,7 +246,7 @@ erDiagram
     }
 
     emoji_reactions {
-        string # "Record ID"
+        string record_id "Record ID"
         string Firstname "Reactor first name"
         string Lastname "Reactor last name"
         string "Website Domain" "Reactor website"
@@ -274,7 +274,7 @@ erDiagram
     }
 
     qa_transcript {
-        string # "Record ID"
+        string record_id "Record ID"
         string Question "Q&A question text"
         string "First Name" "Questioner first name"
         string "Last Name" "Questioner last name"
