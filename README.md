@@ -10,7 +10,7 @@ Automated pipeline converting webinar Excel exports to Clay-ready CSV with compr
 python3 process_webinar_data.py "path/to/webinar.xlsx"
 ```
 
-**Output**: `processed_TIMESTAMP/webinar_clay_import.csv` (914 enriched records, 40 columns)
+**Output**: `processed_TIMESTAMP/webinar_clay_import.csv` (913 enriched records, 40 columns)
 
 ## Architecture
 
@@ -20,10 +20,10 @@ python3 process_webinar_data.py "path/to/webinar.xlsx"
 flowchart TD
     A[Excel Export<br/>8 tabs] --> B[ssconvert<br/>Extract 7 CSVs]
     B --> C[clean_registered_list.csv<br/>Remove duplicates/nulls]
-    C --> D[CRM LEFT JOIN<br/>86.0% match rate]
+    C --> D[CRM LEFT JOIN<br/>100.0% match rate]
     D --> E[Attendance LEFT JOIN<br/>247 attended + 1,168 DNA]
     E --> F[Activity Aggregation<br/>Polls + Emojis + Q&A]
-    F --> G[webinar_clay_import.csv<br/>914 enriched records]
+    F --> G[webinar_clay_import.csv<br/>913 enriched records]
 ```
 
 ## Directory Structure
@@ -63,7 +63,7 @@ flowchart TD
 
 ```mermaid
 erDiagram
-    registered_list ||--o{ CRM : "LEFT JOIN linkedin_url"
+    registered_list ||--o{ CRM : "LEFT JOIN linkedin_url (100.0% match)"
     registered_list ||--o{ attend_list : "LEFT JOIN BMID"
     registered_list ||--o{ did_not_attend_list : "LEFT JOIN BMID"
     registered_list ||--o{ poll_responses : "AGGREGATE COUNT BMID"
@@ -129,22 +129,22 @@ erDiagram
 - Excel: 8 tabs → 7 CSVs (1,751 registered + 5,002 CRM + 247 attend + 1,168 DNA + 180 polls + 151 emojis + 50 Q&A)
 
 **Data Cleaning:**
-- Valid records: 914 (removed 837 invalid/duplicates)
-- BMID validation: 100% coverage
-- LinkedIn cleaning: Removed malformed URLs
+- Valid records: 913 (removed invalid/duplicates with null BMIDs)
+- BMID validation: 100% coverage (no null BMIDs)
+- LinkedIn cleaning: Cleared malformed URLs, preserved valid profiles for Clay enrichment
 - Content sanitization: Embedded newlines → spaces
 
 **Join Performance:**
-- CRM enrichment: 86.0% match rate (784/914 records)
+- CRM enrichment: 100.0% match rate (913/913 records)
 - Attendance status: 100% coverage (247 attended + 1,168 DNA)
-- Poll aggregation: 62.0% participation (567/914)
-- Emoji aggregation: 57.9% participation (529/914)
-- Q&A aggregation: 56.6% participation (517/914)
+- Poll aggregation: 90.0% participation (822/913)
+- Emoji aggregation: 84.4% participation (771/913)
+- Q&A aggregation: 82.6% participation (754/913)
 
 **Output:**
 - Format: RFC 4180 CSV, QUOTE_MINIMAL
 - Fields: 40 total (25 registrant + 11 CRM + 4 activity)
-- Records: 914 complete profiles
+- Records: 913 complete profiles
 - Ready for Clay segmentation and automation
 
 ## GTM Engineer Challenge Criteria

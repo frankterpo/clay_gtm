@@ -167,9 +167,9 @@ def create_clay_import(output_dir):
                 if not firstname or not lastname:
                     continue
 
-                # Skip records with malformed LinkedIn URLs (just domain without profile)
+                # Clean malformed LinkedIn URLs (just domain without profile) - keep records for Clay enrichment
                 if linkedin_url in ['https://linkedin.com/in/', 'https://www.linkedin.com/in/', 'https://linkedin.com/', 'https://www.linkedin.com/']:
-                    continue
+                    cleaned_row['LinkedIn Profile URL'] = ''
 
                 writer.writerow(cleaned_row)
 
