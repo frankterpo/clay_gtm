@@ -181,10 +181,20 @@ erDiagram
 **6 intelligent segments** based on engagement patterns, titles, and feedback:
 
 #### Brand vs. Agency Classification
-- **Smart AI-powered classification**: Clay agents analyze multiple signals (domain patterns, company descriptions, survey responses, Clay enrichment data)
+**Smart AI-powered classification** using multiple data signals for accurate business model determination:
+
 - **Brand segments (1-2)**: Direct brand owners seeking AI visibility solutions
 - **Agency segment (3)**: Client-service firms needing packaged deliverables and reporting
 - **Universal segments (4-6)**: Attendance/satisfaction-based (apply to both, with brand/agency-tailored messaging)
+
+**Clay Enrichment Signals:**
+- **Company profiles**: Employee count, revenue tiers, account segmentation from CRM
+- **Industry granularity**: Specific sectors vs broad "marketing and advertising" categories
+- **Business descriptions**: Full context from LinkedIn company pages via HeyReach MCP
+- **Domain intelligence**: TLD patterns (.agency vs .com) and naming conventions
+- **Business model signals**: B2B/B2C indicators, enterprise/SMB classification
+
+**AI Agent Logic**: Each Clay agent prompt includes sophisticated classification algorithms analyzing domain patterns, company descriptions, survey responses, and enrichment data to determine brand vs agency status, enabling tailored messaging for each business model.
 
 #### Segment Definitions & Business Logic
 
@@ -221,17 +231,6 @@ erDiagram
 - Respect timing constraints and emotional state
 - Build trust through listening and value-first approach
 - Use feedback to personalize subsequent touches
-
-#### Clay Enrichment for Brand vs Agency Classification
-**Enhanced Intelligence**: Beyond basic industry fields, Clay provides comprehensive company data for accurate classification:
-
-- **Company profiles**: Employee count, revenue tiers, account segmentation from CRM
-- **Industry granularity**: Specific sectors vs broad "marketing and advertising" categories
-- **Business descriptions**: Full context from LinkedIn company pages via HeyReach MCP
-- **Domain intelligence**: TLD patterns (.agency vs .com) and naming conventions
-- **Business model signals**: B2B/B2C indicators, enterprise/SMB classification
-
-**AI Agent Logic**: Each Clay agent prompt includes sophisticated classification algorithms that analyze multiple signals to determine brand vs agency status, enabling tailored messaging for each business model.
 
 ### Technical Implementation
 
