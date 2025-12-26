@@ -39,25 +39,52 @@ processed_your_webinar_name/
 ```mermaid
 flowchart TD
     A[Excel File<br/>8 tabs] --> B[process_webinar_data.py<br/>Extracts 7 CSVs:<br/>• registered_list<br/>• CRM<br/>• attend_list<br/>• did_not_attend<br/>• poll_responses<br/>• emoji_reactions<br/>• Q&A_transcript<br/>Clean + Dedupe]
-    B --> C[CRM Enrichment Only<br/>registered_list ←→ CRM<br/>LEFT JOIN on linkedin_url<br/>99.8% match rate]
-    C --> D[webinar_clay_import.csv<br/>1,414 enriched records<br/>1 row per person]
+    B --> C[Comprehensive Joins<br/>CRM + Attendance + Activity<br/>Multiple data sources<br/>Complete enrichment]
+    C --> D[webinar_clay_import.csv<br/>1,403 fully enriched records<br/>Complete participant profiles]
 ```
 
 ### How Files Are Processed
 
 - **CRM.csv**: **Joined** into registrant records (99.8% match on LinkedIn URLs)
-- **Activity CSVs**: **Extracted** but not joined (available for future enrichment)
-- **Base table**: `registered_list.csv` (1,414 records) + CRM enrichment
+- **attend_list.csv** + **did_not_attend_list.csv**: **Joined** to determine attendance status
+- **poll_responses.csv**: **Aggregated** and joined (count per participant)
+- **emoji_reactions.csv**: **Aggregated** and joined (total reactions per participant)
+- **Q&A_transcript.csv**: **Aggregated** and joined (question count per participant)
+- **Base table**: `registered_list.csv` (1,414 records) with ALL data enrichment
 
-### Join Logic (Current Implementation)
+### Comprehensive Join Logic
 
 ```sql
-SELECT r.BMID, r.first_name, r.last_name, r.email, r.linkedin_url,
-       c.company_name, c.customer_status, c.mrr_eur, c.employees
+SELECT r.*, -- All registrant fields
+       c.*, -- All CRM fields (99.8% match)
+       CASE WHEN a.BMID IS NOT NULL THEN 'attended'
+            WHEN dna.BMID IS NOT NULL THEN 'did_not_attend'
+            ELSE 'registered_only' END as attendance_status,
+       COALESCE(p.response_count, 0) as poll_responses,
+       COALESCE(e.emoji_count, 0) as emoji_reactions,
+       COALESCE(q.question_count, 0) as qa_questions
 FROM registered_list r
 LEFT JOIN crm_data c ON r.linkedin_url = c.linkedin_url
+LEFT JOIN attend_list a ON r.BMID = a.BMID
+LEFT JOIN did_not_attend_list dna ON r.BMID = dna.BMID
+LEFT JOIN (SELECT BMID, COUNT(*) as response_count FROM poll_responses GROUP BY BMID) p ON r.BMID = p.BMID
+LEFT JOIN (SELECT BMID, SUM(emoji_counts) as emoji_count FROM emoji_reactions GROUP BY BMID) e ON r.BMID = e.BMID
+LEFT JOIN (SELECT BMID, COUNT(*) as question_count FROM qa_transcript GROUP BY BMID) q ON r.BMID = q.BMID
 WHERE r.BMID IS NOT NULL;
 ```
+
+## 📊 Final Output: Complete Participant Profiles
+
+Each row in `webinar_clay_import.csv` contains **ALL available data** for each participant:
+
+| **Data Category** | **Fields** | **Source** | **Coverage** |
+|------------------|------------|------------|--------------|
+| **Registration** | Name, email, LinkedIn, company, industry, country | `registered_list.csv` | 100% (1,403 records) |
+| **CRM Enrichment** | Customer status, MRR, employees, account tier, sales data | `CRM.csv` | 98.1% match rate |
+| **Attendance** | Status (attended/did_not_attend/registered_only) | `attend_list.csv` + `did_not_attend_list.csv` | 100% coverage |
+| **Engagement** | Poll responses count, emoji reactions count, Q&A questions count | Activity CSVs | 55-66% participation |
+
+**Result**: One comprehensive CSV with complete participant profiles for Clay automation.
 
 ## 🏆 Evaluation Criteria (GTM Engineer Challenge)
 

@@ -94,87 +94,364 @@ def clean_csv_file(csv_path, filename):
     return True
 
 def create_clay_import(output_dir):
-    """Create the comprehensive Clay import file by joining registered list with CRM data"""
+    """Create the comprehensive Clay import file by joining ALL data sources"""
 
-    print("\n🔗 Creating Clay import file with CRM enrichment...")
+    print("\n🔗 Creating comprehensive Clay import file with ALL data joined...")
 
     clay_file = os.path.join(output_dir, 'webinar_clay_import.csv')
+
+    # Input files
     registered_file = os.path.join(output_dir, 'registered list.csv')
     crm_file = os.path.join(output_dir, 'CRM.csv')
+    attend_file = os.path.join(output_dir, 'attend list.csv')
+    dna_file = os.path.join(output_dir, 'did not attend list.csv')
+    polls_file = os.path.join(output_dir, 'poll responses.csv')
+    emoji_file = os.path.join(output_dir, 'emoji eeaction.csv')
+    qa_file = os.path.join(output_dir, 'Q&A transcript.csv')
 
+    # Check required files
     if not os.path.exists(registered_file):
         print("❌ Missing registered list.csv")
         return False
 
     if not os.path.exists(crm_file):
-        print("❌ Missing CRM.csv - cannot enrich with CRM data")
+        print("❌ Missing CRM.csv")
         return False
 
-    # Step 1: Clean registered list (remove empty BMIDs)
+    # Step 1: Clean registered list (skip metadata row, remove empty BMIDs)
+    print("  📋 Step 1: Cleaning registered list...")
     temp_registered = os.path.join(output_dir, 'temp_registered_clean.csv')
-    cmd = "awk -F',' 'NR==1 || $8 != \"\"' '" + registered_file + "' > '" + temp_registered + "'"
-    success, _ = run_command(cmd, "Clean registered list (remove empty BMIDs)")
-    if not success:
+
+    try:
+        import csv
+        with open(registered_file, 'r', encoding='utf-8') as f_in, open(temp_registered, 'w', encoding='utf-8', newline='') as f_out:
+            lines = f_in.readlines()
+            if len(lines) >= 2:
+                # Skip first metadata row, use second row as headers
+                reader = csv.reader(lines[1:])  # Skip first line
+                headers = next(reader)
+
+                writer = csv.writer(f_out)
+                writer.writerow(headers)
+
+                for row in reader:
+                    if len(row) >= 8 and row[7].strip():  # BMID in column 8 (0-indexed)
+                        writer.writerow(row)
+
+        print(f"  ✅ Cleaned registered list")
+    except Exception as e:
+        print(f"❌ Cleaning error: {e}")
         return False
 
-    # Step 2: Join with CRM data using LinkedIn URL (column 11 in registered = column 1 in CRM)
-    temp_joined = os.path.join(output_dir, 'temp_joined.csv')
-    awk_join_script = r"""
+    # Step 2: Join with CRM data using LinkedIn URL
+    print("  📋 Step 2: Joining CRM data...")
+    temp_crm = os.path.join(output_dir, 'temp_crm_joined.csv')
+    awk_crm_join = r"""
 BEGIN {FS=","; OFS=","}
 NR==FNR {
-    if(NR>1) crm[$1] = $2","$3","$4","$5","$6","$7","$8","$9","$10","$11","$12","$13","$14","$15","$16","$17
+    if(NR>1) {
+        # CRM data: linkedin_url,first_name,last_name,company_name,domain,industry,customer_status,...
+        crm[$1] = $2","$3","$4","$5","$6","$7","$8","$9","$10","$11","$12","$13","$14","$15","$16","$17
+    }
     next
 }
 {
     if(NR==1) {
-        print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25
+        print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,"crm_first_name","crm_last_name","crm_company","crm_domain","crm_industry","crm_customer_status","crm_created_date","crm_last_activity","crm_mrr_eur","crm_employees","crm_account_tier","crm_linkedin_url","crm_website","crm_country","crm_city","attendance_status","poll_responses","emoji_reactions","qa_questions"
     } else {
         linkedin_key = $11
         if(linkedin_key in crm) {
             split(crm[linkedin_key], crm_fields, ",")
-            print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,crm_fields[1],crm_fields[2],crm_fields[3],crm_fields[4],crm_fields[5],crm_fields[6],crm_fields[7],crm_fields[8],crm_fields[9],crm_fields[10],crm_fields[11],crm_fields[12],crm_fields[13],crm_fields[14],crm_fields[15]
+            print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,crm_fields[1],crm_fields[2],crm_fields[3],crm_fields[4],crm_fields[5],crm_fields[6],crm_fields[7],crm_fields[8],crm_fields[9],crm_fields[10],crm_fields[11],crm_fields[12],crm_fields[13],crm_fields[14],crm_fields[15],"","","",""
         } else {
-            print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,"","","","","","","","","","","","","","","",""
+            print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,"","","","","","","","","","","","","","","","","","","",""
         }
     }
 }
 """
-    cmd = "awk '" + awk_join_script + "' '" + crm_file + "' '" + temp_registered + "' > '" + temp_joined + "'"
-    success, _ = run_command(cmd, "Join registered list with CRM data")
+    # Use Python for CSV processing
+    try:
+        import csv
+
+        # Load CRM data
+        crm_data = {}
+        with open(crm_file, 'r', encoding='utf-8') as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                linkedin_url = row.get('linkedin_url', '').strip()
+                if linkedin_url:
+                    # Normalize URL
+                    linkedin_url = linkedin_url.replace('https://www.linkedin.com/in/', 'https://linkedin.com/in/')
+                    crm_data[linkedin_url] = row
+
+        # Process registered list
+        with open(temp_registered, 'r', encoding='utf-8') as f_in, open(temp_crm, 'w', encoding='utf-8', newline='') as f_out:
+            reader = csv.DictReader(f_in)
+
+            fieldnames = list(reader.fieldnames) + [
+                'crm_first_name', 'crm_last_name', 'crm_company_name', 'crm_company_domain',
+                'crm_industry', 'crm_customer_status', 'crm_created_at', 'crm_last_activity_at',
+                'crm_mrr_eur', 'crm_employees', 'crm_account_tier', 'attendance_status',
+                'poll_responses', 'emoji_reactions', 'qa_questions'
+            ]
+
+            writer = csv.DictWriter(f_out, fieldnames=fieldnames)
+            writer.writeheader()
+
+            for row in reader:
+                linkedin_key = row.get('LinkedIn Profile URL', '').strip()
+                linkedin_key = linkedin_key.replace('https://www.linkedin.com/in/', 'https://linkedin.com/in/')
+
+                if linkedin_key in crm_data:
+                    crm = crm_data[linkedin_key]
+                    row.update({
+                        'crm_first_name': crm.get('first_name', ''),
+                        'crm_last_name': crm.get('last_name', ''),
+                        'crm_company_name': crm.get('company_name', ''),
+                        'crm_company_domain': crm.get('company_domain', ''),
+                        'crm_industry': crm.get('industry', ''),
+                        'crm_customer_status': crm.get('customer_status', ''),
+                        'crm_created_at': crm.get('created_at', ''),
+                        'crm_last_activity_at': crm.get('last_activity_at', ''),
+                        'crm_mrr_eur': crm.get('mrr_eur', ''),
+                        'crm_employees': crm.get('employees', ''),
+                        'crm_account_tier': crm.get('account_tier', '')
+                    })
+
+                # Initialize activity columns
+                row['attendance_status'] = ''
+                row['poll_responses'] = 0
+                row['emoji_reactions'] = 0
+                row['qa_questions'] = 0
+
+                # Ensure only expected fields are written
+                clean_row = {k: row.get(k, '') for k in fieldnames}
+                writer.writerow(clean_row)
+
+        success = True
+    except Exception as e:
+        print(f"❌ CRM join error: {e}")
+        success = False
+
     if not success:
         return False
 
-    # Step 3: Clean incomplete LinkedIn URLs (CRM linkedin_url column)
-    temp_clean = os.path.join(output_dir, 'temp_clean.csv')
-    cmd = "awk -F',' 'BEGIN{OFS=\",\"} {if(NR==1) print $0; else {$11 = ($11 == \"https://linkedin.com/in/\" || $11 == \"https://www.linkedin.com/in/\") ? \"\" : $11; $26 = ($26 == \"https://linkedin.com/in/\" || $26 == \"https://www.linkedin.com/in/\") ? \"\" : $26; print $0}}' '" + temp_joined + "' > '" + temp_clean + "'"
+    # Step 3: Add attendance status
+    print("  📋 Step 3: Adding attendance status...")
+    temp_attendance = os.path.join(output_dir, 'temp_attendance.csv')
+
+    try:
+        # Load attendance data (skip metadata row)
+        attend_bmids = set()
+        dna_bmids = set()
+
+        if os.path.exists(attend_file):
+            with open(attend_file, 'r', encoding='utf-8') as f:
+                lines = f.readlines()
+                if len(lines) >= 2:
+                    reader = csv.DictReader(lines[1:])  # Skip first metadata row
+                    for row in reader:
+                        bmid = row.get('BMID', '').strip()
+                        if bmid:
+                            attend_bmids.add(bmid)
+
+        if os.path.exists(dna_file):
+            with open(dna_file, 'r', encoding='utf-8') as f:
+                lines = f.readlines()
+                if len(lines) >= 2:
+                    reader = csv.DictReader(lines[1:])  # Skip first metadata row
+                    for row in reader:
+                        bmid = row.get('BMID', '').strip()
+                        if bmid:
+                            dna_bmids.add(bmid)
+
+        # Update CRM joined file with attendance status
+        with open(temp_crm, 'r', encoding='utf-8') as f_in, open(temp_attendance, 'w', encoding='utf-8', newline='') as f_out:
+            reader = csv.DictReader(f_in)
+            writer = csv.DictWriter(f_out, fieldnames=reader.fieldnames)
+            writer.writeheader()
+
+            for row in reader:
+                bmid = row.get('BMID', '').strip()
+                if bmid in attend_bmids:
+                    row['attendance_status'] = 'attended'
+                elif bmid in dna_bmids:
+                    row['attendance_status'] = 'did_not_attend'
+                else:
+                    row['attendance_status'] = 'registered_only'
+
+                clean_row = {k: row.get(k, '') for k in writer.fieldnames}
+                writer.writerow(clean_row)
+
+        print("  ✅ Attendance status added")
+    except Exception as e:
+        print(f"❌ Attendance join error: {e}")
+        return False
+
+    # Step 4: Aggregate poll responses
+    print("  📋 Step 4: Aggregating poll responses...")
+    temp_polls = os.path.join(output_dir, 'temp_polls.csv')
+
+    try:
+        # Load poll data
+        poll_counts = {}
+        if os.path.exists(polls_file):
+            with open(polls_file, 'r', encoding='utf-8') as f:
+                reader = csv.DictReader(f)
+                for row in reader:
+                    bmid = row.get('BMID', '').strip()
+                    if bmid:
+                        poll_counts[bmid] = poll_counts.get(bmid, 0) + 1
+
+        # Update attendance file with poll counts
+        with open(temp_attendance, 'r', encoding='utf-8') as f_in, open(temp_polls, 'w', encoding='utf-8', newline='') as f_out:
+            reader = csv.DictReader(f_in)
+            writer = csv.DictWriter(f_out, fieldnames=reader.fieldnames)
+            writer.writeheader()
+
+            for row in reader:
+                bmid = row.get('BMID', '').strip()
+                row['poll_responses'] = poll_counts.get(bmid, 0)
+                clean_row = {k: row.get(k, '') for k in writer.fieldnames}
+                writer.writerow(clean_row)
+
+        print("  ✅ Poll responses aggregated")
+    except Exception as e:
+        print(f"❌ Poll aggregation error: {e}")
+        return False
+
+    # Step 5: Aggregate emoji reactions
+    print("  📋 Step 5: Aggregating emoji reactions...")
+    temp_emoji = os.path.join(output_dir, 'temp_emoji.csv')
+
+    try:
+        # Load emoji data
+        emoji_totals = {}
+        if os.path.exists(emoji_file):
+            with open(emoji_file, 'r', encoding='utf-8') as f:
+                reader = csv.DictReader(f)
+                for row in reader:
+                    bmid = row.get('BMID', '').strip()
+                    if bmid:
+                        # Sum all emoji columns
+                        emoji_cols = [col for col in row.keys() if col not in ['#', 'First Name', 'Last Name', 'BMID']]
+                        emoji_sum = sum(int(row.get(col, 0) or 0) for col in emoji_cols)
+                        emoji_totals[bmid] = emoji_totals.get(bmid, 0) + emoji_sum
+
+        # Update polls file with emoji counts
+        with open(temp_polls, 'r', encoding='utf-8') as f_in, open(temp_emoji, 'w', encoding='utf-8', newline='') as f_out:
+            reader = csv.DictReader(f_in)
+            writer = csv.DictWriter(f_out, fieldnames=reader.fieldnames)
+            writer.writeheader()
+
+            for row in reader:
+                bmid = row.get('BMID', '').strip()
+                row['emoji_reactions'] = emoji_totals.get(bmid, 0)
+                clean_row = {k: row.get(k, '') for k in writer.fieldnames}
+                writer.writerow(clean_row)
+
+        print("  ✅ Emoji reactions aggregated")
+    except Exception as e:
+        print(f"❌ Emoji aggregation error: {e}")
+        return False
+
+    # Step 6: Aggregate Q&A questions
+    print("  📋 Step 6: Aggregating Q&A questions...")
+    temp_qa = os.path.join(output_dir, 'temp_qa.csv')
+
+    try:
+        # Load Q&A data
+        qa_counts = {}
+        if os.path.exists(qa_file):
+            with open(qa_file, 'r', encoding='utf-8') as f:
+                reader = csv.DictReader(f)
+                for row in reader:
+                    bmid = row.get('BMID', '').strip()
+                    if bmid:
+                        qa_counts[bmid] = qa_counts.get(bmid, 0) + 1
+
+        # Update emoji file with Q&A counts
+        with open(temp_emoji, 'r', encoding='utf-8') as f_in, open(temp_qa, 'w', encoding='utf-8', newline='') as f_out:
+            reader = csv.DictReader(f_in)
+            writer = csv.DictWriter(f_out, fieldnames=reader.fieldnames)
+            writer.writeheader()
+
+            for row in reader:
+                bmid = row.get('BMID', '').strip()
+                row['qa_questions'] = qa_counts.get(bmid, 0)
+                clean_row = {k: row.get(k, '') for k in writer.fieldnames}
+                writer.writerow(clean_row)
+
+        print("  ✅ Q&A questions aggregated")
+    except Exception as e:
+        print(f"❌ Q&A aggregation error: {e}")
+        return False
+
+    # Step 7: Clean URLs and finalize
+    print("  📋 Step 7: Final cleanup and URL cleaning...")
+    temp_final = os.path.join(output_dir, 'temp_final.csv')
+    cmd = f"awk -F',' 'BEGIN{{OFS=\",\"}} {{if(NR==1) print $0; else {{$11 = ($11 == \"https://linkedin.com/in/\" || $11 == \"https://www.linkedin.com/in/\") ? \"\" : $11; $22 = ($22 == \"https://linkedin.com/in/\" || $22 == \"https://www.linkedin.com/in/\") ? \"\" : $22; print $0}}}}' '{temp_qa}' > '{temp_final}'"
     success, _ = run_command(cmd, "Clean incomplete LinkedIn URLs")
+
     if success:
-        cmd = f"mv '{temp_clean}' '{clay_file}'"
-        run_command(cmd, "Create final Clay import file")
+        cmd = f"mv '{temp_final}' '{clay_file}'"
+        run_command(cmd, "Create final comprehensive Clay import file")
     else:
-        cmd = f"mv '{temp_joined}' '{clay_file}'"
+        cmd = f"mv '{temp_qa}' '{clay_file}'"
         run_command(cmd, "Create final Clay import file (without URL cleaning)")
 
-    # Clean up temp files
-    for temp_file in [temp_registered, temp_joined, temp_clean]:
-        if os.path.exists(temp_file):
-            os.remove(temp_file)
+        # Clean up temp files
+        temp_files = [temp_registered, temp_crm, temp_attendance, temp_polls, temp_emoji, temp_qa]
+        for temp_file in temp_files:
+            try:
+                if os.path.exists(temp_file):
+                    os.remove(temp_file)
+            except:
+                pass  # Ignore cleanup errors
 
-    # Count records and CRM matches
+    # Count final statistics
     crm_matches = 0
+    attended_count = 0
+    dna_count = 0
+    poll_participants = 0
+    emoji_participants = 0
+    qa_participants = 0
     total_records = 0
+
     with open(clay_file, 'r') as f:
         for line_num, line in enumerate(f, 1):
             if line_num == 1:
                 continue
             total_records += 1
             fields = line.strip().split(',')
-            if len(fields) > 25 and fields[25].strip():  # CRM customer_status field
+
+            # CRM match (column 17: crm_customer_status)
+            if len(fields) > 16 and fields[16].strip():
                 crm_matches += 1
 
-    print("  ✅ Created Clay import file with CRM enrichment")
+            # Attendance status (column 26)
+            if len(fields) > 25:
+                if fields[25] == 'attended':
+                    attended_count += 1
+                elif fields[25] == 'did_not_attend':
+                    dna_count += 1
+
+            # Activity counts
+            if len(fields) > 26 and fields[26] and fields[26] != '0':
+                poll_participants += 1
+            if len(fields) > 27 and fields[27] and fields[27] != '0':
+                emoji_participants += 1
+            if len(fields) > 28 and fields[28] and fields[28] != '0':
+                qa_participants += 1
+
+    print("  ✅ Created comprehensive Clay import file with ALL data joined")
     print(f"     Total records: {total_records}")
-    print(f"     CRM matches: {crm_matches} ({crm_matches/total_records*100:.1f}%)")
+    print(f"     CRM enriched: {crm_matches} ({crm_matches/total_records*100:.1f}%)")
+    print(f"     Attended: {attended_count} ({attended_count/total_records*100:.1f}%)")
+    print(f"     Did not attend: {dna_count} ({dna_count/total_records*100:.1f}%)")
+    print(f"     Poll participants: {poll_participants} ({poll_participants/total_records*100:.1f}%)")
+    print(f"     Emoji reactors: {emoji_participants} ({emoji_participants/total_records*100:.1f}%)")
+    print(f"     Q&A askers: {qa_participants} ({qa_participants/total_records*100:.1f}%)")
 
     return True
 
