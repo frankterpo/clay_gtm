@@ -129,60 +129,49 @@ def create_clay_import(output_dir):
     try:
         import csv
         with open(registered_file, 'r', encoding='utf-8') as f_in, open(temp_registered, 'w', encoding='utf-8', newline='') as f_out:
-            # Read all lines and pre-clean embedded newlines in quoted fields
-            raw_lines = f_in.readlines()
+            # Read all lines
+            all_lines = f_in.readlines()
+            if len(all_lines) < 3:
+                print("     ERROR: Not enough lines in registered file")
+                return False
 
-            # Process lines to clean embedded newlines while preserving CSV structure
-            cleaned_lines = []
-            in_quote = False
-            current_line = ""
+            # Use csv.DictReader starting from line 17 (skip 16 metadata lines)
+            # The actual header is at line 17 (0-indexed as 16)
+            reader = csv.DictReader(all_lines[16:])  # Skip first 16 metadata lines
 
-            for line in raw_lines[2:]:  # Skip first 2 metadata lines
-                i = 0
-                while i < len(line):
-                    char = line[i]
-                    if char == '"':
-                        in_quote = not in_quote
-                        current_line += char
-                    elif char in '\n\r' and in_quote:
-                        # Replace embedded newlines with spaces when inside quotes
-                        current_line += ' '
+            writer = csv.DictWriter(f_out, fieldnames=reader.fieldnames, quoting=csv.QUOTE_MINIMAL)
+            writer.writeheader()
+
+            for row in reader:
+                # Check if BMID exists and is not empty
+                bmid = row.get('BMID', '').strip()
+                if not bmid:
+                    continue
+
+                # Clean embedded newlines from ALL fields in the row
+                cleaned_row = {}
+                for key, value in row.items():
+                    if value:
+                        # Replace embedded newlines and carriage returns with spaces
+                        cleaned_value = str(value).replace('\n', ' ').replace('\r', ' ').strip()
+                        cleaned_row[key] = cleaned_value
                     else:
-                        current_line += char
-                    i += 1
+                        cleaned_row[key] = value
 
-                # Only add complete lines (when not in a quote or at end of quoted field)
-                if not in_quote or line.endswith('\n'):
-                    cleaned_lines.append(current_line)
-                    current_line = ""
-                else:
-                    # Continue accumulating multiline quoted field
-                    pass
+                # Additional cleaning: remove records with empty names or malformed LinkedIn URLs
+                firstname = cleaned_row.get('Firstname', '').strip()
+                lastname = cleaned_row.get('Lastname', '').strip()
+                linkedin_url = cleaned_row.get('LinkedIn Profile URL', '').strip()
 
-            # Now parse the cleaned lines
-            if len(cleaned_lines) >= 1:  # At least header line
-                reader = csv.reader(cleaned_lines)
-                headers = next(reader)
+                # Skip records with empty names
+                if not firstname or not lastname:
+                    continue
 
-                writer = csv.writer(f_out)
-                writer.writerow(headers)
+                # Skip records with malformed LinkedIn URLs (just domain without profile)
+                if linkedin_url in ['https://linkedin.com/in/', 'https://www.linkedin.com/in/', 'https://linkedin.com/', 'https://www.linkedin.com/']:
+                    continue
 
-                for row in reader:
-                    if len(row) >= 8 and row[7].strip():  # BMID in column 8 (0-indexed)
-                        # Additional cleaning: remove records with empty names or malformed LinkedIn URLs
-                        firstname = row[1].strip() if len(row) > 1 else ""
-                        lastname = row[2].strip() if len(row) > 2 else ""
-                        linkedin_url = row[10].strip() if len(row) > 10 else ""
-
-                        # Skip records with empty names
-                        if not firstname or not lastname:
-                            continue
-
-                        # Skip records with malformed LinkedIn URLs (just domain without profile)
-                        if linkedin_url in ['https://linkedin.com/in/', 'https://www.linkedin.com/in/', 'https://linkedin.com/', 'https://www.linkedin.com/']:
-                            continue
-
-                        writer.writerow(row)
+                writer.writerow(cleaned_row)
 
         print(f"  ✅ Cleaned registered list")
     except Exception as e:
@@ -233,24 +222,9 @@ NR==FNR {
                     crm_count += 1
         print(f"     Loaded {crm_count} CRM records")
 
-        # Process registered list (skip empty first line if present)
+        # Process registered list
         with open(temp_registered, 'r', encoding='utf-8') as f_in, open(temp_crm, 'w', encoding='utf-8', newline='') as f_out:
-            lines = f_in.readlines()
-            # Find the header line (contains "Firstname" or similar)
-            header_line_idx = -1
-            for i, line in enumerate(lines):
-                if 'Firstname' in line:
-                    header_line_idx = i
-                    break
-
-            if header_line_idx == -1:
-                print("     ERROR: Could not find header line")
-                return False
-
-            # Create reader from header line onward
-            from io import StringIO
-            content = ''.join(lines[header_line_idx:])
-            reader = csv.DictReader(StringIO(content))
+            reader = csv.DictReader(f_in)
 
             fieldnames = list(reader.fieldnames) + [
                 'crm_first_name', 'crm_last_name', 'crm_company_name', 'crm_company_domain',
