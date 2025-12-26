@@ -34,17 +34,21 @@ def run_command(cmd, description=""):
         print(f"❌ {description} error: {e}")
         return False, str(e)
 
-def clean_csv_file(csv_path, filename):
+def clean_csv_file(csv_path, filename, dst_path=None):
     """Clean a CSV file by removing duplicates and null BMIDs"""
 
     if not os.path.exists(csv_path):
         return False
 
+    # If no destination path provided, overwrite the source
+    if dst_path is None:
+        dst_path = csv_path
+
     # Count original lines
     with open(csv_path, 'r') as f:
         original_lines = sum(1 for _ in f)
 
-    temp_file = csv_path + '.tmp'
+    temp_file = dst_path + '.tmp'
 
     if filename == 'CRM.csv':
         # CRM uses linkedin_url, no cleaning needed for now
@@ -62,23 +66,23 @@ def clean_csv_file(csv_path, filename):
     # For most files, remove duplicate BMIDs (keep first occurrence)
     if filename in ['attend list.csv', 'registered list.csv', 'did not attend list.csv']:
         # Remove duplicates based on BMID (column 8)
-        cmd = f"awk -F',' '!seen[$8]++' '{temp_file}' > '{csv_path}'"
+        cmd = f"awk -F',' '!seen[$8]++' '{temp_file}' > '{dst_path}'"
         success, _ = run_command(cmd, f"Remove duplicates from {filename}")
         if not success:
             return False
     elif filename == 'emoji eeaction.csv':
         # Special case: remove ALL records with duplicate BMIDs (data corruption)
-        cmd = f"awk -F',' 'NR==1 || !seen[$8]++' '{temp_file}' > '{csv_path}' && awk -F',' 'seen[$8]++' '{temp_file}' | wc -l"
+        cmd = f"awk -F',' 'NR==1 || !seen[$8]++' '{temp_file}' > '{dst_path}' && awk -F',' 'seen[$8]++' '{temp_file}' | wc -l"
         success, output = run_command(cmd, f"Remove duplicate BMIDs from {filename}")
         if success and 'duplicate' in output.lower():
             print(f"  {filename}: removed duplicate BMID records")
     else:
         # For polls and Q&A, keep all records (multiple per person expected)
-        cmd = f"mv '{temp_file}' '{csv_path}'"
+        cmd = f"mv '{temp_file}' '{dst_path}'"
         run_command(cmd, f"Keep all records in {filename}")
 
     # Count final lines
-    with open(csv_path, 'r') as f:
+    with open(dst_path, 'r') as f:
         final_lines = sum(1 for _ in f)
 
     removed = original_lines - final_lines
@@ -100,14 +104,14 @@ def create_clay_import(output_dir):
 
     clay_file = os.path.join(output_dir, 'webinar_clay_import.csv')
 
-    # Input files
-    registered_file = os.path.join(output_dir, 'registered list.csv')
-    crm_file = os.path.join(output_dir, 'CRM.csv')
-    attend_file = os.path.join(output_dir, 'attend list.csv')
-    dna_file = os.path.join(output_dir, 'did not attend list.csv')
-    polls_file = os.path.join(output_dir, 'poll responses.csv')
-    emoji_file = os.path.join(output_dir, 'emoji eeaction.csv')
-    qa_file = os.path.join(output_dir, 'Q&A transcript.csv')
+    # Input files (all source files are in raw_data/ with cleaning applied in-memory)
+    registered_file = os.path.join('raw_data', 'registered list.csv')
+    crm_file = os.path.join('raw_data', 'CRM.csv')
+    attend_file = os.path.join('raw_data', 'attend list.csv')
+    dna_file = os.path.join('raw_data', 'did not attend list.csv')
+    polls_file = os.path.join('raw_data', 'poll responses.csv')
+    emoji_file = os.path.join('raw_data', 'emoji eeaction.csv')
+    qa_file = os.path.join('raw_data', 'Q&A transcript.csv')
 
     # Check required files
     if not os.path.exists(registered_file):
@@ -136,6 +140,19 @@ def create_clay_import(output_dir):
 
                 for row in reader:
                     if len(row) >= 8 and row[7].strip():  # BMID in column 8 (0-indexed)
+                        # Additional cleaning: remove records with empty names or malformed LinkedIn URLs
+                        firstname = row[1].strip() if len(row) > 1 else ""
+                        lastname = row[2].strip() if len(row) > 2 else ""
+                        linkedin_url = row[10].strip() if len(row) > 10 else ""
+
+                        # Skip records with empty names
+                        if not firstname or not lastname:
+                            continue
+
+                        # Skip records with malformed LinkedIn URLs (just domain without profile)
+                        if linkedin_url in ['https://linkedin.com/in/', 'https://www.linkedin.com/in/', 'https://linkedin.com/', 'https://www.linkedin.com/']:
+                            continue
+
                         writer.writerow(row)
 
         print(f"  ✅ Cleaned registered list")
@@ -481,9 +498,9 @@ def process_excel_file(excel_path):
         print("❌ ssconvert not found. Install with: brew install gnumeric")
         return False
 
-    # Convert Excel to individual CSV files
+    # Convert Excel to individual CSV files in raw_data/
     print("\n📊 Converting Excel tabs to CSV...")
-    cmd = f"ssconvert -S '{excel_path}' '{processing_dir}/%s.csv'"
+    cmd = f"ssconvert -S '{excel_path}' 'raw_data/%s.csv'"
     success, output = run_command(cmd, "Convert Excel to CSV")
 
     if not success:
@@ -491,14 +508,10 @@ def process_excel_file(excel_path):
         return False
 
     # List created files
-    csv_files = [f for f in os.listdir(processing_dir) if f.endswith('.csv')]
-    print(f"   Created {len(csv_files)} CSV files: {', '.join(csv_files)}")
+    csv_files = [f for f in os.listdir("raw_data") if f.endswith('.csv') and f != 'webinar_clay_import.csv']
+    print(f"   Created {len(csv_files)} CSV files in raw_data/: {', '.join(csv_files)}")
 
-    # Clean each CSV file
-    print("\n🧹 Cleaning data...")
-    for csv_file in csv_files:
-        csv_path = os.path.join(processing_dir, csv_file)
-        clean_csv_file(csv_path, csv_file)
+    # Note: Source files remain in raw_data/, cleaning is handled in create_clay_import
 
     # Create Clay import file
     create_clay_import(processing_dir)

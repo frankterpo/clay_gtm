@@ -49,16 +49,16 @@ flowchart TD
 clay_gtm/
 ├── raw_data/
 │   ├── GTM ENG – Challenge version.xlsx      # Input Excel file
-│   └── webinar_clay_import.csv               # Final output (ready for Clay)
-├── processed_YYYYMMDD_HHMMSS/                # Timestamped processing folders
-│   ├── registered list.csv                   # Cleaned registrant data
-│   ├── CRM.csv                              # CRM enrichment data
-│   ├── attend list.csv                      # Attendance data
-│   ├── did not attend list.csv              # Non-attendance data
-│   ├── poll responses.csv                   # Poll interaction data
-│   ├── emoji eeaction.csv                   # Emoji reaction data
-│   ├── Q&A transcript.csv                   # Q&A interaction data
-│   ├── temp_*.csv                           # Intermediate processing files
+│   ├── registered list.csv                   # Source: All registrants
+│   ├── CRM.csv                              # Source: CRM enrichment data
+│   ├── attend list.csv                      # Source: Attendance data
+│   ├── did not attend list.csv              # Source: Non-attendance data
+│   ├── poll responses.csv                   # Source: Poll interaction data
+│   ├── emoji eeaction.csv                   # Source: Emoji reaction data
+│   ├── Q&A transcript.csv                   # Source: Q&A interaction data
+│   └── webinar_clay_import.csv              # Final output (ready for Clay)
+├── processed_YYYYMMDD_HHMMSS/               # Timestamped processing folders
+│   ├── temp_*.csv                           # Intermediate processing files only
 │   ├── webinar_clay_import.csv              # Processing result (copied to raw_data/)
 │   └── data_relationships.md                # Processing documentation
 └── [other project files]
