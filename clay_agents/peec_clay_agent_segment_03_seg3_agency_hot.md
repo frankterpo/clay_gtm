@@ -41,32 +41,50 @@ Heyreach Action: <either "ADD_TO_HEYREACH_CAMPAIGN: <campaign_name>" or "N/A">
 ### Business Logic (Identification)
 - **Smart brand/agency classification** (see Brand vs Agency Classification Logic below)
 - **Hot engagement**: Same thresholds as other HOT segments ({{Q&A}}>=1 OR {{Chats}}>=2 OR {{Polls}}>=1 OR {{Engaged}}>=60)
+- **CRM relationship assessment**: Analyze {{crm_customer_status}} for partnership potential
+
+### CRM Intelligence Integration
+**Leverage Historical Peec AI Agency Relationships:**
+
+**Channel Partner Potential:**
+- **{{crm_customer_status}} analysis**: Active agencies show partnership opportunities
+- **Revenue relationships**: {{crm_mrr_eur}} indicates existing business relationship scale
+- **Agency size**: {{crm_employees}} shows capacity for client work and partnerships
+
+**Client Portfolio Intelligence:**
+- **Industry focus**: {{crm_industry}} reveals target client verticals
+- **Relationship duration**: {{crm_created_at}} shows how long agency has been engaged
+- **Engagement patterns**: {{crm_last_activity_at}} indicates active vs dormant relationships
+
+**Partnership Readiness:**
+- **Account tier context**: {{crm_account_tier}} informs partnership complexity
+- **Geographic coverage**: {{crm_country}} shows market alignment
+- **Service expansion**: CRM history indicates cross-sell opportunities
 
 ### Brand vs Agency Classification Logic
-**Clay Agent Analysis**: Use multiple data signals to determine brand vs agency status:
+**Clay Agent Analysis**: Critical for agency identification and partnership assessment:
 
 **Brand Indicators:**
-- **Company domain analysis**: Non-agency domains (.com, .co.uk, etc. vs .agency, .digital)
-- **Company size**: {{crm_employees}} > 50 suggests established brand
+- **CRM company patterns**: Brands typically show direct customer relationships
+- **Company size**: {{crm_employees}} and {{crm_account_tier}} indicate brand operations
+- **Customer status**: Brands more likely to have transactional "Closed Lost" or "Active Customer" status
 - **LinkedIn company analysis**: Via HeyReach MCP - check for "brand" vs "agency" in company description
-- **Survey responses**: Focus on "our brand", "our campaigns", "our products"
-- **Clay enrichment**: {{crm_industry}} more specific than broad industry field
 
 **Agency Indicators:**
-- **Company domain analysis**: Contains "agency", "digital", "creative", "marketing" in domain
-- **Business model signals**: Survey mentions "clients", "multiple brands", "agency services"
-- **Company description**: Via HeyReach MCP - check for "agency", "consulting", "client work"
-- **Service focus**: Emphasis on deliverables and reporting rather than direct brand ownership
-
-**Fallback**: If unclear, analyze {{Website Domain}} and {{Company Linkedin URL}} via HeyReach MCP to determine business model.
+- **CRM relationship patterns**: Agencies often show ongoing consulting/lead relationships
+- **Domain signals**: Contains "agency", "digital", "creative", "marketing" in {{crm_company_domain}}
+- **Business model**: Survey responses emphasize "clients", "multiple brands", "agency services"
+- **Service focus**: Emphasis on deliverables, reporting, and client work
+- **Industry context**: {{crm_industry}} often shows "Marketing & Advertising" or consulting focus
 
 ### Why This Segment Matters for GTM Motion
-Agencies represent high-volume potential customers who can become channel partners. Each agency client represents multiple brand opportunities. Agencies need packaged, reportable deliverables that prove ROI to their clients, creating scalable GTM motion through agency partnerships.
+Agencies are high-value channel partners with multiplier effects. CRM data reveals established relationships and partnership potential. Each agency represents multiple brand opportunities through their client work, creating scalable GTM motion via agency partnerships and referrals.
 
 ### Additional Enrichments
+- **CRM partnership intelligence**: Customer status, revenue relationships, account tier
 - **Client portfolio**: Agency's key clients and industries (would enrich via Clay + web research)
 - **Service offerings**: Specific AI/marketing services offered
-- **Agency size**: Number of clients, typical project size
+- **Channel potential**: Historical relationship data informs partnership strategy
 
 ## Messaging & Campaign Plan
 

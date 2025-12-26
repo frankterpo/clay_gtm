@@ -41,33 +41,53 @@ Heyreach Action: <either "ADD_TO_HEYREACH_CAMPAIGN: <campaign_name>" or "N/A">
 ### Business Logic (Identification)
 - **No-show criteria**: {{Duration}} = 0/blank AND {{Engaged}} = 0/blank (or {{Recording Duration}} blank)
 - **Universal application**: Applies to both brand AND agency classifications (no engagement = no show regardless of type)
+- **CRM relationship assessment**: Analyze {{crm_customer_status}} for re-engagement strategy
 - **Smart brand/agency classification** for messaging tailoring (see below)
 
+### CRM Intelligence Integration
+**Leverage Historical Peec AI Relationship Data for Re-engagement Strategy:**
+
+**Lost Customer Recovery Priority:**
+- **{{crm_customer_status}} = "Closed Lost"**: High-value re-engagement targets
+- **Revenue history**: {{crm_mrr_eur}} shows past payment relationship
+- **Timeline analysis**: {{crm_last_activity_at}} indicates recency of last engagement
+
+**Lead Nurturing Context:**
+- **{{crm_customer_status}} = "Lead"**: Existing prospects who showed initial interest
+- **Relationship duration**: {{crm_created_at}} shows how long they've been in consideration
+- **Engagement patterns**: Past CRM interactions inform re-engagement approach
+
+**Re-engagement Potential:**
+- **Account tier**: {{crm_account_tier}} informs deal size expectations
+- **Company scale**: {{crm_employees}} indicates buying process complexity
+- **Geographic context**: {{crm_country}} for market-specific messaging
+
 ### Brand vs Agency Classification Logic
-**Clay Agent Analysis**: Critical for tailoring messaging to business model:
+**Clay Agent Analysis**: Essential for tailoring re-engagement messaging:
 
 **Brand Indicators:**
-- **Company domain analysis**: Non-agency domains (.com, .co.uk, etc. vs .agency, .digital)
-- **Company size**: {{crm_employees}} > 50 suggests established brand
+- **CRM company validation**: {{crm_company_name}} confirms brand ownership
+- **Company scale**: {{crm_employees}} and {{crm_account_tier}} indicate brand operations
+- **Customer status**: Brands more likely to have "Closed Lost" or "Active Customer" history
 - **LinkedIn company analysis**: Via HeyReach MCP - check for "brand" vs "agency" in company description
 - **Survey responses**: Focus on "our brand", "our campaigns", "our products"
-- **Clay enrichment**: {{crm_industry}} more specific than broad industry field
 
 **Agency Indicators:**
-- **Company domain analysis**: Contains "agency", "digital", "creative", "marketing" in domain
-- **Business model signals**: Survey mentions "clients", "multiple brands", "agency services"
-- **Company description**: Via HeyReach MCP - check for "agency", "consulting", "client work"
+- **CRM relationship patterns**: Agencies often show ongoing "Lead" or consulting relationships
+- **Domain signals**: Contains "agency", "digital", "creative", "marketing" in domain
+- **Business model**: Survey mentions "clients", "multiple brands", "agency services"
 - **Service focus**: Emphasis on deliverables and reporting rather than direct brand ownership
 
-**Impact on Messaging**: Brand messaging focuses on direct ROI; agency messaging emphasizes client deliverables and reporting value.
+**Impact on Messaging**: Brand re-engagement focuses on direct value recovery; agency focuses on partnership continuation.
 
 ### Why This Segment Matters for GTM Motion
-No-shows represent registered interest that didn't convert to attendance. Re-engagement campaigns can recover 15-25% of these leads. Lower-friction re-entry points (recording access, quick snapshots) maintain relationship while gathering feedback on barriers to attendance.
+No-shows with CRM history represent known prospects with demonstrated interest. Re-engagement campaigns can recover 15-25% of these leads, with higher conversion rates for those with prior Peec AI relationships. CRM data enables personalized re-engagement strategies based on relationship history.
 
 ### Additional Enrichments
+- **CRM relationship intelligence**: Customer status, revenue history, engagement timeline
 - **Registration timing**: When they registered vs. webinar timing
-- **Email engagement**: Open rates, click-through on previous communications
-- **Competitor signals**: Alternative solutions they might be evaluating
+- **Historical context**: Past CRM interactions inform re-engagement approach
+- **Re-engagement potential**: Account tier and company size for qualification
 
 ## Messaging & Campaign Plan
 

@@ -42,32 +42,50 @@ Heyreach Action: <either "ADD_TO_HEYREACH_CAMPAIGN: <campaign_name>" or "N/A">
 - **Smart brand/agency classification** (see Brand vs Agency Classification Logic below)
 - **Hot engagement**: Same thresholds as SEG1 ({{Q&A}}>=1 OR {{Chats}}>=2 OR {{Polls}}>=1 OR {{Engaged}}>=60)
 - **Practitioner titles**: {{Title}} does NOT contain: CMO, VP, Head, Director, Founder, CEO, Chief (but still brand-focused roles like Manager, Specialist, Coordinator)
+- **CRM qualification**: Use {{crm_account_tier}} and {{crm_employees}} for lead sizing
+
+### CRM Intelligence Integration
+**Leverage Historical Peec AI Relationship Data for Tactical Engagement:**
+
+**Company Size & Resource Assessment:**
+- **{{crm_account_tier}}**: SMB vs Mid-Market informs implementation complexity
+- **{{crm_employees}}**: Company size indicates internal resources and buying process
+- **Lead qualification**: Existing CRM data shows qualified prospects vs cold outreach
+
+**Relationship Context:**
+- **{{crm_customer_status}}**: "Lead" status indicates pre-qualified prospects
+- **Engagement history**: {{crm_created_at}} shows how long they've been in consideration
+- **Industry alignment**: {{crm_industry}} more accurate for solution fit assessment
+
+**Buying Process Intelligence:**
+- **Account tier insights**: SMBs need simpler, faster solutions
+- **Timeline analysis**: {{crm_last_activity_at}} shows engagement recency
+- **Resource assessment**: Employee count informs internal champion potential
 
 ### Brand vs Agency Classification Logic
-**Clay Agent Analysis**: Use multiple data signals to determine brand vs agency status:
+**Clay Agent Analysis**: Use multiple data signals including CRM company intelligence:
 
 **Brand Indicators:**
-- **Company domain analysis**: Non-agency domains (.com, .co.uk, etc. vs .agency, .digital)
-- **Company size**: {{crm_employees}} > 50 suggests established brand
+- **CRM company validation**: {{crm_company_name}} matches brand ownership patterns
+- **Company scale**: {{crm_employees}} and {{crm_account_tier}} indicate brand operations
+- **Customer status patterns**: Brands show "Closed Lost" or "Active Customer" relationship history
 - **LinkedIn company analysis**: Via HeyReach MCP - check for "brand" vs "agency" in company description
 - **Survey responses**: Focus on "our brand", "our campaigns", "our products"
-- **Clay enrichment**: {{crm_industry}} more specific than broad industry field
 
 **Agency Indicators:**
-- **Company domain analysis**: Contains "agency", "digital", "creative", "marketing" in domain
+- **CRM relationship patterns**: Agencies often appear as ongoing "Lead" relationships
 - **Business model signals**: Survey mentions "clients", "multiple brands", "agency services"
-- **Company description**: Via HeyReach MCP - check for "agency", "consulting", "client work"
+- **Domain analysis**: Contains "agency", "digital", "creative", "marketing" in domain
 - **Service focus**: Emphasis on deliverables and reporting rather than direct brand ownership
 
-**Fallback**: If unclear, analyze {{Website Domain}} and {{Company Linkedin URL}} via HeyReach MCP to determine business model.
-
 ### Why This Segment Matters for GTM Motion
-Brand practitioners execute day-to-day marketing operations. They're closer to the tactical challenges of AI search optimization and need practical, implementable solutions. Converting practitioners creates internal champions who influence decision-maker purchasing while driving product adoption at the operational level.
+Brand practitioners drive day-to-day AI search implementation. CRM data shows these are qualified leads with known company size and relationship history. Practitioners influence purchasing decisions and become internal champions, accelerating product adoption through hands-on implementation.
 
 ### Additional Enrichments
+- **CRM company intelligence**: Account tier, employee count, industry specificity
 - **Role depth**: Specific marketing function (SEO, content, SEM) via LinkedIn enrichment
-- **Tech stack**: Current tools and workflows (would enrich via Clay)
-- **Team structure**: Understanding reporting relationships and influence pathways
+- **Resource assessment**: Company size informs implementation complexity
+- **Historical relationship**: CRM status and timeline for engagement strategy
 
 ## Messaging & Campaign Plan
 

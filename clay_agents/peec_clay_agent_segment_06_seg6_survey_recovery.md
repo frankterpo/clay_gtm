@@ -42,33 +42,53 @@ Heyreach Action: <either "ADD_TO_HEYREACH_CAMPAIGN: <campaign_name>" or "N/A">
 - **Low satisfaction**: {{Rating}} <= 3 (on 1-5 scale)
 - **Negative sentiment**: {{Comment}} signals confusion, missing value, or dissatisfaction
 - **Universal application**: Applies to both brand AND agency classifications (dissatisfaction needs addressing regardless of type)
+- **CRM relationship context**: {{crm_customer_status}} determines win-back vs conversion strategy
 - **Smart brand/agency classification** for tailored recovery messaging (see below)
 
+### CRM Intelligence Integration
+**Leverage Historical Peec AI Relationship Data for Recovery Strategy:**
+
+**Lost Customer Win-Back Priority:**
+- **{{crm_customer_status}} = "Closed Lost"**: High-value recovery targets with known revenue history
+- **Revenue recovery**: {{crm_mrr_eur}} shows past payment relationship and win-back potential
+- **Relationship recency**: {{crm_last_activity_at}} indicates how recently they were engaged
+
+**Prospect Conversion Strategy:**
+- **{{crm_customer_status}} = "Lead"**: Dissatisfied prospects who showed initial interest
+- **Lead qualification**: Use {{crm_account_tier}} and {{crm_employees}} for deal sizing
+- **Relationship duration**: {{crm_created_at}} shows how long they've been considering
+
+**Recovery Intelligence:**
+- **Account tier context**: {{crm_account_tier}} informs recovery complexity and resource allocation
+- **Company scale**: {{crm_employees}} indicates internal champion potential for recovery
+- **Geographic context**: {{crm_country}} for market-specific recovery approaches
+
 ### Brand vs Agency Classification Logic
-**Clay Agent Analysis**: Critical for understanding dissatisfaction context:
+**Clay Agent Analysis**: Essential for understanding dissatisfaction context and recovery approach:
 
 **Brand Indicators:**
-- **Company domain analysis**: Non-agency domains (.com, .co.uk, etc. vs .agency, .digital)
-- **Company size**: {{crm_employees}} > 50 suggests established brand
+- **CRM company validation**: {{crm_company_name}} confirms direct brand relationships
+- **Company scale**: {{crm_employees}} indicates brand operations and recovery complexity
+- **Customer status patterns**: Brands with "Closed Lost" status show win-back opportunities
 - **LinkedIn company analysis**: Via HeyReach MCP - check for "brand" vs "agency" in company description
 - **Survey responses**: Focus on "our brand", "our campaigns", "our products"
-- **Clay enrichment**: {{crm_industry}} more specific than broad industry field
 
 **Agency Indicators:**
-- **Company domain analysis**: Contains "agency", "digital", "creative", "marketing" in domain
-- **Business model signals**: Survey mentions "clients", "multiple brands", "agency services"
-- **Company description**: Via HeyReach MCP - check for "agency", "consulting", "client work"
+- **CRM relationship patterns**: Agencies often show consulting relationships that may have ended
+- **Domain signals**: Contains "agency", "digital", "creative", "marketing" in domain
+- **Business model**: Survey mentions "clients", "multiple brands", "agency services"
 - **Service focus**: Emphasis on deliverables and reporting rather than direct brand ownership
 
-**Impact on Messaging**: Brand recovery focuses on direct value gaps; agency recovery addresses client deliverable concerns.
+**Impact on Messaging**: Brand recovery focuses on direct value gaps and win-back; agency recovery addresses partnership concerns and client deliverable issues.
 
 ### Why This Segment Matters for GTM Motion
-Detractors can damage reputation and influence others negatively. Recovery campaigns can convert 20-40% of detractors into promoters. Understanding their concerns improves product and messaging. Failed recovery attempts provide crucial feedback for product development.
+Detractors with CRM history represent known relationships that can be recovered. Lost customers offer immediate revenue recovery (20-40% win-back rate), while dissatisfied prospects provide feedback for product improvement. CRM data enables targeted recovery strategies based on relationship history and business model.
 
 ### Additional Enrichments
+- **CRM relationship intelligence**: Customer status, revenue history, account tier for recovery strategy
 - **Pain point analysis**: Specific concerns from feedback (would analyze via NLP)
-- **Competitor comparison**: What they expected vs. what they received
-- **Product gap identification**: Missing features or unclear value propositions
+- **Recovery potential**: Historical relationship data informs win-back vs conversion approach
+- **Account context**: Company size and tier for resource allocation and complexity assessment
 
 ## Messaging & Campaign Plan
 

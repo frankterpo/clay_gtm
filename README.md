@@ -189,6 +189,28 @@ erDiagram
 
 **AI Agent Logic**: Each Clay agent prompt includes sophisticated classification algorithms analyzing domain patterns, company descriptions, survey responses, and enrichment data to determine brand vs agency status, enabling tailored messaging for each business model.
 
+#### CRM Data Integration for Enhanced Segmentation
+**Historical Peec AI Relationship Intelligence:**
+
+**CRM Data Points Utilized:**
+- **{{crm_customer_status}}**: "Active Customer", "Closed Lost", "Lead" - determines engagement strategy
+- **{{crm_mrr_eur}}**: Monthly recurring revenue - shows payment history and expansion potential
+- **{{crm_account_tier}}**: SMB, Mid-Market - informs deal size and complexity
+- **{{crm_employees}}**: Company size - indicates buying process and resource allocation
+- **{{crm_industry}}**: Specific industry classification - more accurate than broad fields
+- **{{crm_created_at}}**: Relationship start date - shows consideration duration
+- **{{crm_last_activity_at}}**: Last engagement date - indicates recency and relationship health
+- **{{crm_country}}**: Geographic context for market-specific messaging
+
+**Segmentation Enhancement Impact:**
+- **Lost Customer Recovery**: SEG1, SEG4, SEG6 use CRM status for win-back prioritization
+- **Lead Qualification**: SEG2 uses account tier and employee data for sizing
+- **Channel Partnerships**: SEG3 analyzes agency relationship history
+- **Expansion Opportunities**: SEG5 differentiates active customers from new leads
+- **Relationship Context**: All segments use timeline and engagement data for personalization
+
+**AI Agent CRM Integration**: Each Clay agent analyzes CRM relationship history to tailor messaging based on past interactions, payment history, and relationship maturity.
+
 #### Segment Definitions & Business Logic
 
 | Segment | Business Logic | GTM Importance | Additional Enrichments |

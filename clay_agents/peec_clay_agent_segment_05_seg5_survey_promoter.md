@@ -42,33 +42,53 @@ Heyreach Action: <either "ADD_TO_HEYREACH_CAMPAIGN: <campaign_name>" or "N/A">
 - **High satisfaction**: {{Rating}} >= 4 (on 1-5 scale)
 - **Positive sentiment**: {{Comment}} contains clearly positive language OR enthusiastic feedback
 - **Universal application**: Applies to both brand AND agency classifications (satisfaction transcends business type)
+- **CRM relationship analysis**: {{crm_customer_status}} determines expansion vs acquisition strategy
 - **Smart brand/agency classification** for messaging tailoring (see below)
 
+### CRM Intelligence Integration
+**Leverage Historical Peec AI Relationship Data for Promoter Strategy:**
+
+**Active Customer Expansion:**
+- **{{crm_customer_status}} = "Active Customer"**: Cross-sell and upsell opportunities
+- **Revenue expansion**: {{crm_mrr_eur}} shows current relationship value and growth potential
+- **Account tier context**: {{crm_account_tier}} informs expansion complexity and pricing
+
+**New Customer Acquisition:**
+- **{{crm_customer_status}} = "Lead"**: Qualified prospects ready for conversion
+- **Lost customer recovery**: {{crm_customer_status}} = "Closed Lost" with positive feedback
+- **Relationship timeline**: {{crm_created_at}} shows consideration duration
+
+**Advocacy & Reference Potential:**
+- **Company scale**: {{crm_employees}} indicates reference value and testimonial impact
+- **Industry influence**: {{crm_industry}} shows market segment authority
+- **Engagement history**: {{crm_last_activity_at}} indicates relationship strength
+
 ### Brand vs Agency Classification Logic
-**Clay Agent Analysis**: Essential for customizing promoter messaging:
+**Clay Agent Analysis**: Critical for promoter strategy differentiation:
 
 **Brand Indicators:**
-- **Company domain analysis**: Non-agency domains (.com, .co.uk, etc. vs .agency, .digital)
-- **Company size**: {{crm_employees}} > 50 suggests established brand
+- **CRM company validation**: {{crm_company_name}} confirms brand ownership for case studies
+- **Company scale**: {{crm_employees}} indicates brand influence and reference value
+- **Customer status**: Brands with "Active Customer" status show expansion opportunities
 - **LinkedIn company analysis**: Via HeyReach MCP - check for "brand" vs "agency" in company description
 - **Survey responses**: Focus on "our brand", "our campaigns", "our products"
-- **Clay enrichment**: {{crm_industry}} more specific than broad industry field
 
 **Agency Indicators:**
-- **Company domain analysis**: Contains "agency", "digital", "creative", "marketing" in domain
-- **Business model signals**: Survey mentions "clients", "multiple brands", "agency services"
-- **Company description**: Via HeyReach MCP - check for "agency", "consulting", "client work"
-- **Service focus**: Emphasis on deliverables and reporting rather than direct brand ownership
+- **CRM relationship patterns**: Agencies often show consulting or partnership relationships
+- **Domain signals**: Contains "agency", "digital", "creative", "marketing" in domain
+- **Business model**: Survey mentions "clients", "multiple brands", "agency services"
+- **Partnership focus**: Emphasis on client work and agency-client relationships
 
-**Impact on Messaging**: Brand promoters get case study offers; agency promoters get client testimonial and partnership opportunities.
+**Impact on Messaging**: Brand promoters get case study offers; agency promoters get partnership expansion and client testimonial opportunities.
 
 ### Why This Segment Matters for GTM Motion
-Promoters are your strongest advocates and most likely to convert. They provide social proof, case studies, and referrals. Converting promoters creates reference customers who accelerate sales cycles for similar prospects through testimonials and word-of-mouth.
+Promoters with CRM history represent proven value and relationship strength. Active customers offer immediate expansion revenue, while qualified leads with positive feedback convert at higher rates. CRM data enables personalized advocacy strategies based on relationship maturity and business model.
 
 ### Additional Enrichments
-- **Testimonial potential**: Detailed feedback analysis for case studies
-- **Referral network**: Connections who might benefit from similar solutions
-- **Success metrics**: Specific outcomes they achieved (would survey post-conversion)
+- **CRM relationship intelligence**: Customer status, revenue data, account tier for expansion strategy
+- **Testimonial potential**: Detailed feedback analysis for case studies and social proof
+- **Reference value**: Company size and industry influence for advocacy impact
+- **Expansion opportunities**: Historical relationship data informs cross-sell potential
 
 ## Messaging & Campaign Plan
 

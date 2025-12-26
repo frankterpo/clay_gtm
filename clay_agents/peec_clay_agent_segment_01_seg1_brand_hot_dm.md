@@ -42,32 +42,51 @@ Heyreach Action: <either "ADD_TO_HEYREACH_CAMPAIGN: <campaign_name>" or "N/A">
 - **Smart brand/agency classification** (see Brand vs Agency Classification Logic below)
 - **Hot engagement**: ({{Q&A}}>=1 OR {{Chats}}>=2 OR {{Polls}}>=1 OR {{Engaged}}>=60)
 - **Decision maker titles**: {{Title}} contains: CMO, VP, Head, Director, Founder, CEO, Chief
+- **CRM-enriched prioritization**: {{crm_customer_status}} analysis for re-engagement potential
+
+### CRM Intelligence Integration
+**Leverage Historical Peec AI Relationship Data:**
+
+**Lost Customer Re-engagement Priority:**
+- **{{crm_customer_status}} = "Closed Lost"**: High-priority re-engagement targets
+- **{{crm_mrr_eur}} > 0**: Previous paying customers - focus on win-back messaging
+- **Account tier analysis**: {{crm_account_tier}} (SMB/Mid-Market) informs deal size expectations
+- **Timeline analysis**: {{crm_last_activity_at}} shows recency of relationship
+
+**Lead Qualification Enhancement:**
+- **{{crm_customer_status}} = "Lead"**: Existing qualified prospects in pipeline
+- **Company scale**: {{crm_employees}} for account sizing and resource allocation
+- **Industry specificity**: {{crm_industry}} more accurate than broad {{Industry}} field
+
+**Active Customer Expansion:**
+- **{{crm_customer_status}} = "Active Customer"**: Cross-sell/upsell opportunities
+- **MRR context**: {{crm_mrr_eur}} shows current revenue relationship
+- **Engagement recency**: {{crm_last_activity_at}} for timing optimization
 
 ### Brand vs Agency Classification Logic
-**Clay Agent Analysis**: Use multiple data signals to determine brand vs agency status:
+**Clay Agent Analysis**: Use multiple data signals including CRM history:
 
 **Brand Indicators:**
-- **Company domain analysis**: Non-agency domains (.com, .co.uk, etc. vs .agency, .digital)
+- **CRM company data**: {{crm_company_name}}, {{crm_company_domain}} for brand identification
 - **Company size**: {{crm_employees}} > 50 suggests established brand
+- **Customer status patterns**: Brands more likely to have "Closed Lost" or "Active Customer" status
 - **LinkedIn company analysis**: Via HeyReach MCP - check for "brand" vs "agency" in company description
 - **Survey responses**: Focus on "our brand", "our campaigns", "our products"
-- **Clay enrichment**: {{crm_industry}} more specific than broad industry field
 
 **Agency Indicators:**
-- **Company domain analysis**: Contains "agency", "digital", "creative", "marketing" in domain
+- **CRM patterns**: Agencies often show as "Lead" status (consulting relationships)
 - **Business model signals**: Survey mentions "clients", "multiple brands", "agency services"
-- **Company description**: Via HeyReach MCP - check for "agency", "consulting", "client work"
+- **Domain analysis**: Contains "agency", "digital", "creative", "marketing" in domain
 - **Service focus**: Emphasis on deliverables and reporting rather than direct brand ownership
 
-**Fallback**: If unclear, analyze {{Website Domain}} and {{Company Linkedin URL}} via HeyReach MCP to determine business model.
-
 ### Why This Segment Matters for GTM Motion
-High-intent brand decision makers already showing deep webinar engagement. These are sales-qualified leads with demonstrated interest in AI search/visibility solutions. Converting these to customers drives immediate revenue while establishing enterprise reference cases.
+High-intent brand decision makers with proven webinar engagement. CRM data shows these are sales-qualified leads with historical Peec AI relationships. Lost customers represent immediate revenue recovery opportunities, while new leads can be qualified using existing CRM intelligence.
 
 ### Additional Enrichments
-- **Firmographics**: Company size ({{crm_employees}}), account tier ({{crm_account_tier}}), MRR ({{crm_mrr_eur}})
+- **CRM relationship intelligence**: Customer status, MRR history, account tier, engagement timeline
+- **Firmographics**: Company size ({{crm_employees}}), revenue context ({{crm_mrr_eur}})
 - **Role validation**: LinkedIn profile verification via HeyReach MCP
-- **Tech stack**: Current AI/search tools usage (would enrich via Clay)
+- **Historical context**: Previous interactions inform re-engagement strategy
 
 ## Messaging & Campaign Plan
 
