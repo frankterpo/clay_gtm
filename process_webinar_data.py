@@ -130,9 +130,9 @@ def create_clay_import(output_dir):
         import csv
         with open(registered_file, 'r', encoding='utf-8') as f_in, open(temp_registered, 'w', encoding='utf-8', newline='') as f_out:
             lines = f_in.readlines()
-            if len(lines) >= 2:
-                # Skip first metadata row, use second row as headers
-                reader = csv.reader(lines[1:])  # Skip first line
+            if len(lines) >= 3:  # Need at least 3 lines: 2 metadata + 1 header
+                # Skip first TWO metadata rows, use third row as headers
+                reader = csv.reader(lines[2:])  # Skip first two lines
                 headers = next(reader)
 
                 writer = csv.writer(f_out)
@@ -192,6 +192,7 @@ NR==FNR {
 
         # Load CRM data
         crm_data = {}
+        crm_count = 0
         with open(crm_file, 'r', encoding='utf-8') as f:
             reader = csv.DictReader(f)
             for row in reader:
@@ -200,10 +201,27 @@ NR==FNR {
                     # Normalize URL
                     linkedin_url = linkedin_url.replace('https://www.linkedin.com/in/', 'https://linkedin.com/in/')
                     crm_data[linkedin_url] = row
+                    crm_count += 1
+        print(f"     Loaded {crm_count} CRM records")
 
-        # Process registered list
+        # Process registered list (skip empty first line if present)
         with open(temp_registered, 'r', encoding='utf-8') as f_in, open(temp_crm, 'w', encoding='utf-8', newline='') as f_out:
-            reader = csv.DictReader(f_in)
+            lines = f_in.readlines()
+            # Find the header line (contains "Firstname" or similar)
+            header_line_idx = -1
+            for i, line in enumerate(lines):
+                if 'Firstname' in line:
+                    header_line_idx = i
+                    break
+
+            if header_line_idx == -1:
+                print("     ERROR: Could not find header line")
+                return False
+
+            # Create reader from header line onward
+            from io import StringIO
+            content = ''.join(lines[header_line_idx:])
+            reader = csv.DictReader(StringIO(content))
 
             fieldnames = list(reader.fieldnames) + [
                 'crm_first_name', 'crm_last_name', 'crm_company_name', 'crm_company_domain',
@@ -215,11 +233,13 @@ NR==FNR {
             writer = csv.DictWriter(f_out, fieldnames=fieldnames)
             writer.writeheader()
 
+            match_count = 0
             for row in reader:
                 linkedin_key = row.get('LinkedIn Profile URL', '').strip()
                 linkedin_key = linkedin_key.replace('https://www.linkedin.com/in/', 'https://linkedin.com/in/')
 
-                if linkedin_key in crm_data:
+                if linkedin_key and linkedin_key in crm_data:
+                    match_count += 1
                     crm = crm_data[linkedin_key]
                     row.update({
                         'crm_first_name': crm.get('first_name', ''),
@@ -234,17 +254,18 @@ NR==FNR {
                         'crm_employees': crm.get('employees', ''),
                         'crm_account_tier': crm.get('account_tier', '')
                     })
-
-                # Initialize activity columns
-                row['attendance_status'] = ''
-                row['poll_responses'] = 0
-                row['emoji_reactions'] = 0
-                row['qa_questions'] = 0
+                else:
+                    # Initialize activity columns
+                    row['attendance_status'] = ''
+                    row['poll_responses'] = 0
+                    row['emoji_reactions'] = 0
+                    row['qa_questions'] = 0
 
                 # Ensure only expected fields are written
                 clean_row = {k: row.get(k, '') for k in fieldnames}
                 writer.writerow(clean_row)
 
+        print(f"     CRM matches found: {match_count}")
         success = True
     except Exception as e:
         print(f"❌ CRM join error: {e}")
