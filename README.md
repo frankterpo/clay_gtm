@@ -44,12 +44,31 @@ clay_gtm/
 ### Data Cleaning Workflow
 
 ```mermaid
-flowchart TD
-    A[ssconvert<br/>Excel → 7 CSVs] --> B[Clean registered_list.csv<br/>Skip 16 metadata lines]
-    B --> C[BMID validation<br/>Remove nulls/duplicates]
-    C --> D[LinkedIn URL cleaning<br/>Clear malformed URLs, preserve complete profiles]
-    D --> E[Multiline content<br/>Replace \n\r → spaces]
-    E --> F[temp_registered_clean.csv]
+flowchart LR
+    subgraph Input["Input Processing"]
+        A[ssconvert<br/>Excel → 7 CSVs]
+    end
+
+    subgraph Validation["Data Validation"]
+        B[Parse registered_list.csv<br/>Skip 16 metadata lines]
+        C[BMID validation<br/>Remove null/invalid records]
+    end
+
+    subgraph Cleaning["Content Cleaning"]
+        D[LinkedIn URL validation<br/>Clear malformed URLs]
+        E[Multiline sanitization<br/>Replace \n\r → spaces]
+    end
+
+    subgraph Output["Clean Dataset"]
+        F[temp_registered_clean.csv<br/>Validated registrant base]
+    end
+
+    A --> B --> C --> D --> E --> F
+
+    style Input fill:#e1f5fe
+    style Validation fill:#f3e5f5
+    style Cleaning fill:#e8f5e8
+    style Output fill:#fff3e0
 ```
 
 ### Entity Relationships
