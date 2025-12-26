@@ -15,13 +15,8 @@ python3 process_webinar_data.py "path/to/webinar.xlsx"
 ## Data Flow
 
 ```mermaid
-flowchart TD
-    A[Excel Export<br/>8 tabs] --> B[ssconvert<br/>Extract 7 CSVs]
-    B --> C[clean_registered_list.csv<br/>Remove duplicates/nulls]
-    C --> D[CRM LEFT JOIN<br/>83.8% match rate]
-    D --> E[Attendance LEFT JOIN<br/>247 attended + 1,168 DNA]
-    E --> F[Activity Aggregation<br/>Polls + Emojis + Q&A]
-    F --> G[webinar_clay_import.csv<br/>914 enriched records]
+flowchart LR
+    A[Excel<br/>7 data tabs] --> B[ssconvert] --> C[7 CSVs<br/>raw_data/] --> D[Clean<br/>registered_list] --> E[CRM Join<br/>83.8% match] --> F[Attendance Join<br/>247 + 1,168] --> G[Activity Aggregation<br/>Polls + Emojis + Q&A] --> H[webinar_clay_import.csv<br/>914 records]
 ```
 
 ## Directory Structure
