@@ -462,11 +462,18 @@ def process_excel_file(excel_path):
         print(f"❌ Excel file not found: {excel_path}")
         return False
 
-    # Use raw_data as output directory
-    output_dir = "raw_data"
+    # Create timestamped processing directory
+    from datetime import datetime
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    processing_dir = f"raw_data/processed_{timestamp}"
+
+    # Ensure raw_data directory exists
+    os.makedirs("raw_data", exist_ok=True)
+    os.makedirs(processing_dir, exist_ok=True)
 
     print(f"🚀 Processing webinar data from: {excel_path}")
-    print(f"📁 Output directory: {output_dir}")
+    print(f"📁 Processing directory: {processing_dir}")
+    print(f"🎯 Final output: raw_data/webinar_clay_import.csv")
 
     # Check if ssconvert is available
     success, _ = run_command("which ssconvert", "Check ssconvert availability")
@@ -476,7 +483,7 @@ def process_excel_file(excel_path):
 
     # Convert Excel to individual CSV files
     print("\n📊 Converting Excel tabs to CSV...")
-    cmd = f"ssconvert -S '{excel_path}' '{output_dir}/%s.csv'"
+    cmd = f"ssconvert -S '{excel_path}' '{processing_dir}/%s.csv'"
     success, output = run_command(cmd, "Convert Excel to CSV")
 
     if not success:
@@ -484,26 +491,32 @@ def process_excel_file(excel_path):
         return False
 
     # List created files
-    csv_files = [f for f in os.listdir(output_dir) if f.endswith('.csv')]
+    csv_files = [f for f in os.listdir(processing_dir) if f.endswith('.csv')]
     print(f"   Created {len(csv_files)} CSV files: {', '.join(csv_files)}")
 
     # Clean each CSV file
     print("\n🧹 Cleaning data...")
     for csv_file in csv_files:
-        csv_path = os.path.join(output_dir, csv_file)
+        csv_path = os.path.join(processing_dir, csv_file)
         clean_csv_file(csv_path, csv_file)
 
     # Create Clay import file
-    create_clay_import(output_dir)
+    create_clay_import(processing_dir)
 
     # Create documentation
-    create_documentation(output_dir)
+    create_documentation(processing_dir)
+
+    # Copy final result to raw_data
+    clay_file_src = os.path.join(processing_dir, 'webinar_clay_import.csv')
+    clay_file_dst = os.path.join('raw_data', 'webinar_clay_import.csv')
+    if os.path.exists(clay_file_src):
+        import shutil
+        shutil.copy2(clay_file_src, clay_file_dst)
+        print(f"   ✅ Final Clay import copied to: {clay_file_dst}")
 
     print("\n🎉 Processing complete!")
-    print(f"   📂 All files saved to: {output_dir}")
-    clay_file = os.path.join(output_dir, 'webinar_clay_import.csv')
-    if os.path.exists(clay_file):
-        print(f"   🎯 Ready for Clay: {clay_file}")
+    print(f"   📂 Processing files saved to: {processing_dir}")
+    print(f"   🎯 Final Clay import: {clay_file_dst}")
 
     return True
 

@@ -38,19 +38,38 @@ processed_your_webinar_name/
 
 ```mermaid
 flowchart TD
-    A[Excel File<br/>8 tabs] --> B[process_webinar_data.py<br/>Extracts 7 CSVs:<br/>• registered_list<br/>• CRM<br/>• attend_list<br/>• did_not_attend<br/>• poll_responses<br/>• emoji_reactions<br/>• Q&A_transcript<br/>Clean + Dedupe]
-    B --> C[Comprehensive Joins<br/>CRM + Attendance + Activity<br/>Multiple data sources<br/>Complete enrichment]
-    C --> D[webinar_clay_import.csv<br/>1,403 fully enriched records<br/>Complete participant profiles]
+    A[Excel File<br/>8 tabs] --> B[process_webinar_data.py<br/>Creates: raw_data/processed_TIMESTAMP/<br/>Extracts 7 CSVs + temp files<br/>Clean + Dedupe]
+    B --> C[Comprehensive Joins<br/>CRM + Attendance + Activity<br/>Multiple data sources]
+    C --> D[webinar_clay_import.csv<br/>Copied to: raw_data/<br/>1,403 fully enriched records]
+```
+
+## 📁 Directory Structure
+
+```
+raw_data/
+├── GTM ENG – Challenge version.xlsx          # Input Excel file
+├── webinar_clay_import.csv                   # Final output (ready for Clay)
+└── processed_YYYYMMDD_HHMMSS/               # Timestamped processing folders
+    ├── registered list.csv                   # Cleaned registrant data
+    ├── CRM.csv                              # CRM enrichment data
+    ├── attend list.csv                      # Attendance data
+    ├── did not attend list.csv              # Non-attendance data
+    ├── poll responses.csv                   # Poll interaction data
+    ├── emoji eeaction.csv                   # Emoji reaction data
+    ├── Q&A transcript.csv                   # Q&A interaction data
+    ├── temp_*.csv                           # Intermediate processing files
+    ├── webinar_clay_import.csv              # Processing result (copied to raw_data/)
+    └── data_relationships.md                # Processing documentation
 ```
 
 ### How Files Are Processed
 
-- **CRM.csv**: **Joined** into registrant records (99.8% match on LinkedIn URLs)
+- **CRM.csv**: **Joined** into registrant records (98.1% match on LinkedIn URLs)
 - **attend_list.csv** + **did_not_attend_list.csv**: **Joined** to determine attendance status
 - **poll_responses.csv**: **Aggregated** and joined (count per participant)
 - **emoji_reactions.csv**: **Aggregated** and joined (total reactions per participant)
 - **Q&A_transcript.csv**: **Aggregated** and joined (question count per participant)
-- **Base table**: `registered_list.csv` (1,414 records) with ALL data enrichment
+- **Base table**: `registered_list.csv` (1,403 records) with ALL data enrichment
 
 ### Comprehensive Join Logic
 
