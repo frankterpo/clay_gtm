@@ -309,7 +309,7 @@ NR==FNR {
         # Update CRM joined file with attendance status
         with open(temp_crm, 'r', encoding='utf-8') as f_in, open(temp_attendance, 'w', encoding='utf-8', newline='') as f_out:
             reader = csv.DictReader(f_in)
-            writer = csv.DictWriter(f_out, fieldnames=reader.fieldnames, quoting=csv.QUOTE_ALL)
+            writer = csv.DictWriter(f_out, fieldnames=reader.fieldnames, quoting=csv.QUOTE_MINIMAL)
             writer.writeheader()
 
             for row in reader:
@@ -347,7 +347,7 @@ NR==FNR {
         # Update attendance file with poll counts
         with open(temp_attendance, 'r', encoding='utf-8') as f_in, open(temp_polls, 'w', encoding='utf-8', newline='') as f_out:
             reader = csv.DictReader(f_in)
-            writer = csv.DictWriter(f_out, fieldnames=reader.fieldnames, quoting=csv.QUOTE_ALL)
+            writer = csv.DictWriter(f_out, fieldnames=reader.fieldnames, quoting=csv.QUOTE_MINIMAL)
             writer.writeheader()
 
             for row in reader:
@@ -382,7 +382,7 @@ NR==FNR {
         # Update polls file with emoji counts
         with open(temp_polls, 'r', encoding='utf-8') as f_in, open(temp_emoji, 'w', encoding='utf-8', newline='') as f_out:
             reader = csv.DictReader(f_in)
-            writer = csv.DictWriter(f_out, fieldnames=reader.fieldnames, quoting=csv.QUOTE_ALL)
+            writer = csv.DictWriter(f_out, fieldnames=reader.fieldnames, quoting=csv.QUOTE_MINIMAL)
             writer.writeheader()
 
             for row in reader:
@@ -414,7 +414,7 @@ NR==FNR {
         # Update emoji file with Q&A counts
         with open(temp_emoji, 'r', encoding='utf-8') as f_in, open(temp_qa, 'w', encoding='utf-8', newline='') as f_out:
             reader = csv.DictReader(f_in)
-            writer = csv.DictWriter(f_out, fieldnames=reader.fieldnames, quoting=csv.QUOTE_ALL)
+            writer = csv.DictWriter(f_out, fieldnames=reader.fieldnames, quoting=csv.QUOTE_MINIMAL)
             writer.writeheader()
 
             for row in reader:
