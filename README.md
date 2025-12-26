@@ -28,9 +28,9 @@ processed_your_webinar_name/
 ```
 
 ### 🎯 Clay Import File
-- **1,414 enriched records** with **50+ columns**
+- **1,183 enriched records** with **50+ columns**
 - **BMID** primary key (1 row per person)
-- **99.8% CRM match rate** (company data merged)
+- **86.0% CRM match rate** (company data merged)
 - **100% LinkedIn coverage** (social enrichment ready)
 - **Shell-based processing** (no complex dependencies)
 
@@ -40,7 +40,7 @@ processed_your_webinar_name/
 flowchart TD
     A[Excel File<br/>8 tabs] --> B[process_webinar_data.py<br/>Creates: processed_TIMESTAMP/<br/>Extracts 7 CSVs + temp files<br/>Clean + Dedupe]
     B --> C[Comprehensive Joins<br/>CRM + Attendance + Activity<br/>Multiple data sources]
-    C --> D[webinar_clay_import.csv<br/>Copied to: raw_data/<br/>1,403 fully enriched records]
+    C --> D[webinar_clay_import.csv<br/>In: processed_TIMESTAMP/<br/>1,183 fully enriched records]
 ```
 
 ## 📁 Directory Structure
@@ -55,11 +55,10 @@ clay_gtm/
 │   ├── did not attend list.csv              # Source: Non-attendance data
 │   ├── poll responses.csv                   # Source: Poll interaction data
 │   ├── emoji eeaction.csv                   # Source: Emoji reaction data
-│   ├── Q&A transcript.csv                   # Source: Q&A interaction data
-│   └── webinar_clay_import.csv              # Final output (ready for Clay)
+│   └── Q&A transcript.csv                   # Source: Q&A interaction data
 ├── processed_YYYYMMDD_HHMMSS/               # Timestamped processing folders
 │   ├── temp_*.csv                           # Intermediate processing files only
-│   ├── webinar_clay_import.csv              # Processing result (copied to raw_data/)
+│   ├── webinar_clay_import.csv              # Final output (ready for Clay)
 │   └── data_relationships.md                # Processing documentation
 └── [other project files]
 ```
@@ -71,7 +70,7 @@ clay_gtm/
 - **poll_responses.csv**: **Aggregated** and joined (count per participant)
 - **emoji_reactions.csv**: **Aggregated** and joined (total reactions per participant)
 - **Q&A_transcript.csv**: **Aggregated** and joined (question count per participant)
-- **Base table**: `registered_list.csv` (1,403 records) with ALL data enrichment
+- **Base table**: `registered_list.csv` (1,183 records) with ALL data enrichment
 
 ### Comprehensive Join Logic
 

@@ -129,10 +129,39 @@ def create_clay_import(output_dir):
     try:
         import csv
         with open(registered_file, 'r', encoding='utf-8') as f_in, open(temp_registered, 'w', encoding='utf-8', newline='') as f_out:
-            lines = f_in.readlines()
-            if len(lines) >= 3:  # Need at least 3 lines: 2 metadata + 1 header
-                # Skip first TWO metadata rows, use third row as headers
-                reader = csv.reader(lines[2:])  # Skip first two lines
+            # Read all lines and pre-clean embedded newlines in quoted fields
+            raw_lines = f_in.readlines()
+
+            # Process lines to clean embedded newlines while preserving CSV structure
+            cleaned_lines = []
+            in_quote = False
+            current_line = ""
+
+            for line in raw_lines[2:]:  # Skip first 2 metadata lines
+                i = 0
+                while i < len(line):
+                    char = line[i]
+                    if char == '"':
+                        in_quote = not in_quote
+                        current_line += char
+                    elif char in '\n\r' and in_quote:
+                        # Replace embedded newlines with spaces when inside quotes
+                        current_line += ' '
+                    else:
+                        current_line += char
+                    i += 1
+
+                # Only add complete lines (when not in a quote or at end of quoted field)
+                if not in_quote or line.endswith('\n'):
+                    cleaned_lines.append(current_line)
+                    current_line = ""
+                else:
+                    # Continue accumulating multiline quoted field
+                    pass
+
+            # Now parse the cleaned lines
+            if len(cleaned_lines) >= 1:  # At least header line
+                reader = csv.reader(cleaned_lines)
                 headers = next(reader)
 
                 writer = csv.writer(f_out)
@@ -262,7 +291,7 @@ NR==FNR {
                     row['qa_questions'] = 0
 
                 # Ensure only expected fields are written
-                clean_row = {k: row.get(k, '') for k in fieldnames}
+                clean_row = {k: str(row.get(k, '')).replace('\n', ' ').replace('\r', ' ').strip() for k in fieldnames}
                 writer.writerow(clean_row)
 
         print(f"     CRM matches found: {match_count}")
@@ -306,7 +335,7 @@ NR==FNR {
         # Update CRM joined file with attendance status
         with open(temp_crm, 'r', encoding='utf-8') as f_in, open(temp_attendance, 'w', encoding='utf-8', newline='') as f_out:
             reader = csv.DictReader(f_in)
-            writer = csv.DictWriter(f_out, fieldnames=reader.fieldnames)
+            writer = csv.DictWriter(f_out, fieldnames=reader.fieldnames, quoting=csv.QUOTE_ALL)
             writer.writeheader()
 
             for row in reader:
@@ -318,7 +347,7 @@ NR==FNR {
                 else:
                     row['attendance_status'] = 'registered_only'
 
-                clean_row = {k: row.get(k, '') for k in writer.fieldnames}
+                clean_row = {k: str(row.get(k, '')).replace('\n', ' ').replace('\r', ' ').strip() for k in writer.fieldnames}
                 writer.writerow(clean_row)
 
         print("  ✅ Attendance status added")
@@ -344,13 +373,13 @@ NR==FNR {
         # Update attendance file with poll counts
         with open(temp_attendance, 'r', encoding='utf-8') as f_in, open(temp_polls, 'w', encoding='utf-8', newline='') as f_out:
             reader = csv.DictReader(f_in)
-            writer = csv.DictWriter(f_out, fieldnames=reader.fieldnames)
+            writer = csv.DictWriter(f_out, fieldnames=reader.fieldnames, quoting=csv.QUOTE_ALL)
             writer.writeheader()
 
             for row in reader:
                 bmid = row.get('BMID', '').strip()
                 row['poll_responses'] = poll_counts.get(bmid, 0)
-                clean_row = {k: row.get(k, '') for k in writer.fieldnames}
+                clean_row = {k: str(row.get(k, '')).replace('\n', ' ').replace('\r', ' ').strip() for k in writer.fieldnames}
                 writer.writerow(clean_row)
 
         print("  ✅ Poll responses aggregated")
@@ -379,13 +408,13 @@ NR==FNR {
         # Update polls file with emoji counts
         with open(temp_polls, 'r', encoding='utf-8') as f_in, open(temp_emoji, 'w', encoding='utf-8', newline='') as f_out:
             reader = csv.DictReader(f_in)
-            writer = csv.DictWriter(f_out, fieldnames=reader.fieldnames)
+            writer = csv.DictWriter(f_out, fieldnames=reader.fieldnames, quoting=csv.QUOTE_ALL)
             writer.writeheader()
 
             for row in reader:
                 bmid = row.get('BMID', '').strip()
                 row['emoji_reactions'] = emoji_totals.get(bmid, 0)
-                clean_row = {k: row.get(k, '') for k in writer.fieldnames}
+                clean_row = {k: str(row.get(k, '')).replace('\n', ' ').replace('\r', ' ').strip() for k in writer.fieldnames}
                 writer.writerow(clean_row)
 
         print("  ✅ Emoji reactions aggregated")
@@ -411,13 +440,13 @@ NR==FNR {
         # Update emoji file with Q&A counts
         with open(temp_emoji, 'r', encoding='utf-8') as f_in, open(temp_qa, 'w', encoding='utf-8', newline='') as f_out:
             reader = csv.DictReader(f_in)
-            writer = csv.DictWriter(f_out, fieldnames=reader.fieldnames)
+            writer = csv.DictWriter(f_out, fieldnames=reader.fieldnames, quoting=csv.QUOTE_ALL)
             writer.writeheader()
 
             for row in reader:
                 bmid = row.get('BMID', '').strip()
                 row['qa_questions'] = qa_counts.get(bmid, 0)
-                clean_row = {k: row.get(k, '') for k in writer.fieldnames}
+                clean_row = {k: str(row.get(k, '')).replace('\n', ' ').replace('\r', ' ').strip() for k in writer.fieldnames}
                 writer.writerow(clean_row)
 
         print("  ✅ Q&A questions aggregated")
@@ -540,17 +569,12 @@ def process_excel_file(excel_path):
     # Create documentation
     create_documentation(processing_dir)
 
-    # Copy final result to raw_data
-    clay_file_src = os.path.join(processing_dir, 'webinar_clay_import.csv')
-    clay_file_dst = os.path.join('raw_data', 'webinar_clay_import.csv')
-    if os.path.exists(clay_file_src):
-        import shutil
-        shutil.copy2(clay_file_src, clay_file_dst)
-        print(f"   ✅ Final Clay import copied to: {clay_file_dst}")
+    # Final result stays only in processed folder
+    clay_file_final = os.path.join(processing_dir, 'webinar_clay_import.csv')
 
     print("\n🎉 Processing complete!")
     print(f"   📂 Processing files saved to: {processing_dir}")
-    print(f"   🎯 Final Clay import: {clay_file_dst}")
+    print(f"   🎯 Final Clay import: {clay_file_final}")
 
     return True
 
