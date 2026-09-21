@@ -1,0 +1,29 @@
+{
+  "source": "clay",
+  "signal_type": "promotion",
+  "detected_at": "2026-09-18T16:42:11Z",
+  "confidence": 0.78,
+  "idempotency_key": "clay:signal_engine_commercial_v1:row_b2c884:promotion:2026-09-18",
+  "hubspot_contact_id": "88421",
+  "hubspot_company_id": "55871",
+  "hubspot_deal_id": "90012",
+  "record_state": "stuck",
+  "status": "new",
+  "payload": {
+    "person_full_name": "Marcus Chen",
+    "person_email": "mchen@northlakecredit.com",
+    "person_linkedin_url": "https://www.linkedin.com/in/marcuschen",
+    "company_domain": "northlakecredit.com",
+    "company_name": "Northlake Credit",
+    "old_title": "Senior Associate, Business Development",
+    "new_title": "Director, Business Development",
+    "old_company_name": "Northlake Credit",
+    "old_company_domain": "northlakecredit.com",
+    "new_company_name": "Northlake Credit",
+    "new_company_domain": "northlakecredit.com",
+    "buyer_champion_match": true,
+    "clay_table_id": "signal_engine_commercial_v1",
+    "clay_row_id": "row_b2c884",
+    "clay_enrichment_provider": "clay_enrich_person_diff"
+  }
+}

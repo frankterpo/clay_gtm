@@ -1,0 +1,130 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/frankterpo/clay_gtm/signal_engine/schemas/clay-signal-ingest.schema.json",
+  "title": "ClaySignalIngestPayload",
+  "description": "Unified append-only signal row emitted by Clay (webhook/HTTP). HubSpot IDs are optional hints for matching; Clay must not write to HubSpot in PoC v1.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "source",
+    "signal_type",
+    "detected_at",
+    "confidence",
+    "payload"
+  ],
+  "properties": {
+    "signal_id": {
+      "type": "string",
+      "description": "Optional client id; server may assign sig_* if omitted.",
+      "pattern": "^sig_[a-zA-Z0-9_-]+$|^$"
+    },
+    "idempotency_key": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 256,
+      "description": "Dedupe key, e.g. clay:{table_id}:{row_id}:{signal_type}:{detected_at_date}"
+    },
+    "detected_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO-8601 UTC when Clay detected or confirmed the signal"
+    },
+    "signal_type": {
+      "type": "string",
+      "enum": ["job_change", "promotion", "new_hire"]
+    },
+    "source": {
+      "const": "clay"
+    },
+    "hubspot_contact_id": {
+      "type": ["string", "null"],
+      "pattern": "^[0-9]+$|^$"
+    },
+    "hubspot_company_id": {
+      "type": ["string", "null"],
+      "pattern": "^[0-9]+$|^$"
+    },
+    "hubspot_deal_id": {
+      "type": ["string", "null"],
+      "pattern": "^[0-9]+$|^$"
+    },
+    "record_state": {
+      "type": ["string", "null"],
+      "enum": ["ghosted", "stuck", "active", "closed_lost", null]
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "status": {
+      "type": "string",
+      "enum": ["new", "actioned", "dismissed"],
+      "default": "new"
+    },
+    "payload": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["company_domain"],
+      "properties": {
+        "person_email": { "type": ["string", "null"], "format": "email" },
+        "person_linkedin_url": { "type": ["string", "null"], "format": "uri" },
+        "person_full_name": { "type": ["string", "null"] },
+        "company_domain": {
+          "type": "string",
+          "description": "Primary account domain for matching (new employer for job_change; employer for promotion/new_hire)"
+        },
+        "company_name": { "type": ["string", "null"] },
+        "old_title": { "type": ["string", "null"] },
+        "new_title": { "type": ["string", "null"] },
+        "old_company_name": { "type": ["string", "null"] },
+        "old_company_domain": { "type": ["string", "null"] },
+        "new_company_name": { "type": ["string", "null"] },
+        "new_company_domain": { "type": ["string", "null"] },
+        "buyer_champion_match": {
+          "type": ["boolean", "null"],
+          "description": "True when title matches buyer/champion filters (new_hire play)"
+        },
+        "clay_table_id": { "type": "string" },
+        "clay_row_id": { "type": "string" },
+        "clay_enrichment_provider": { "type": ["string", "null"] },
+        "raw": {
+          "type": "object",
+          "description": "Optional passthrough of provider fields for debugging"
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "signal_type": { "const": "job_change" } } },
+      "then": {
+        "properties": {
+          "payload": {
+            "required": ["old_company_domain", "new_company_domain", "new_title"]
+          }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "signal_type": { "const": "promotion" } } },
+      "then": {
+        "properties": {
+          "payload": {
+            "required": ["old_title", "new_title"]
+          }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "signal_type": { "const": "new_hire" } } },
+      "then": {
+        "properties": {
+          "payload": {
+            "required": ["new_title", "person_linkedin_url"]
+          }
+        }
+      }
+    }
+  ]
+}

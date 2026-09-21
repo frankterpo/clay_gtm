@@ -1,0 +1,29 @@
+{
+  "source": "clay",
+  "signal_type": "new_hire",
+  "detected_at": "2026-09-19T11:05:33Z",
+  "confidence": 0.62,
+  "idempotency_key": "clay:signal_engine_new_hires_v1:row_9d01fe:new_hire:2026-09-19",
+  "hubspot_contact_id": null,
+  "hubspot_company_id": "44102",
+  "hubspot_deal_id": null,
+  "record_state": "closed_lost",
+  "status": "new",
+  "payload": {
+    "person_full_name": "Priya Nair",
+    "person_email": null,
+    "person_linkedin_url": "https://www.linkedin.com/in/priyanair-gtm",
+    "company_domain": "summitpeak.com",
+    "company_name": "Summit Peak Advisors",
+    "old_title": null,
+    "new_title": "Head of Revenue Operations",
+    "old_company_name": null,
+    "old_company_domain": null,
+    "new_company_name": "Summit Peak Advisors",
+    "new_company_domain": "summitpeak.com",
+    "buyer_champion_match": true,
+    "clay_table_id": "signal_engine_new_hires_v1",
+    "clay_row_id": "row_9d01fe",
+    "clay_enrichment_provider": "find_people_at_company"
+  }
+}

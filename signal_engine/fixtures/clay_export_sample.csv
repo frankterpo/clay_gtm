@@ -1,0 +1,2 @@
+person_full_name,person_work_email,person_linkedin_url,account_domain,account_name,hs_contact_id,hs_company_id,record_state,previous_title,current_title,previous_company_domain,current_company_domain,confidence_score,detected_at,emit_signal,clay_row_id,enrichment_provider
+Alex Rivera,alex@newfund.com,https://www.linkedin.com/in/alexrivera,newfund.com,New Fund LP,20001,30001,ghosted,Associate,Principal,oldfund.com,newfund.com,0.88,2026-09-20 10:00:00,true,row_fixture_01,mixrank_job_change

@@ -1,0 +1,58 @@
+{
+  "workbook": "Signal Engine — Commercial (PoC v1)",
+  "tables": {
+    "signal_engine_commercial_v1": {
+      "purpose": "ICP contact job_change and promotion monitoring",
+      "primary_key": "person_work_email",
+      "columns": [
+        "person_full_name",
+        "person_work_email",
+        "person_linkedin_url",
+        "account_domain",
+        "account_name",
+        "hs_contact_id",
+        "hs_company_id",
+        "hs_deal_id",
+        "record_state",
+        "previous_title",
+        "current_title",
+        "previous_company_name",
+        "previous_company_domain",
+        "current_company_name",
+        "current_company_domain",
+        "enrichment_provider",
+        "detected_at",
+        "confidence_score",
+        "signal_type",
+        "emit_signal",
+        "idempotency_key",
+        "signal_ingest_json",
+        "ingest_status"
+      ]
+    },
+    "signal_engine_new_hires_v1": {
+      "purpose": "Buyer/champion new hires at pilot accounts",
+      "primary_key": "account_domain",
+      "columns": [
+        "account_domain",
+        "account_name",
+        "hs_company_id",
+        "person_full_name",
+        "person_linkedin_url",
+        "person_work_email",
+        "current_title",
+        "start_date",
+        "buyer_champion_match",
+        "signal_type",
+        "detected_at",
+        "confidence_score",
+        "emit_signal",
+        "idempotency_key",
+        "signal_ingest_json"
+      ]
+    }
+  },
+  "excluded_clay_table_ids": [
+    "t_0t6nmvhh4tbjH6sKTWd"
+  ]
+}

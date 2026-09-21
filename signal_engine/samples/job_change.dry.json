@@ -1,0 +1,29 @@
+{
+  "source": "clay",
+  "signal_type": "job_change",
+  "detected_at": "2026-09-17T09:14:00Z",
+  "confidence": 0.85,
+  "idempotency_key": "clay:signal_engine_commercial_v1:row_7f3a91:job_change:2026-09-17",
+  "hubspot_contact_id": "10234",
+  "hubspot_company_id": "55871",
+  "hubspot_deal_id": null,
+  "record_state": "ghosted",
+  "status": "new",
+  "payload": {
+    "person_full_name": "Jane Doe",
+    "person_email": "jane.doe@apexpartners.com",
+    "person_linkedin_url": "https://www.linkedin.com/in/janedoe",
+    "company_domain": "apexpartners.com",
+    "company_name": "Apex Partners",
+    "old_title": "Director of Marketing",
+    "new_title": "VP Marketing",
+    "old_company_name": "Harbor Capital",
+    "old_company_domain": "harborcapital.com",
+    "new_company_name": "Apex Partners",
+    "new_company_domain": "apexpartners.com",
+    "buyer_champion_match": true,
+    "clay_table_id": "signal_engine_commercial_v1",
+    "clay_row_id": "row_7f3a91",
+    "clay_enrichment_provider": "mixrank_job_change"
+  }
+}
