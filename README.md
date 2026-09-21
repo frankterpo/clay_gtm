@@ -1,3 +1,11 @@
+# clay_gtm
+
+## Signal Engine (PoC v1 — Clay commercial signals)
+
+External **job_change**, **promotion**, and **new_hire** signals from Clay into the append-only pipeline (no HubSpot writes from Clay). See **[signal_engine/README.md](signal_engine/README.md)**.
+
+---
+
 # Webinar Data Processing Pipeline
 
 ## Overview
